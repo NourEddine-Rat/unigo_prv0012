@@ -32,7 +32,7 @@ const [incidentForm, setIncidentForm] = useState({
   severity: 'medium'
 })
 
-
+// Sort reservations: upcoming first, then completed
 const sortedReservations = [...bookings].sort((a, b) => {
   const aIsUpcoming = a.status === 'confirmed' || a.status === 'pending'
   const bIsUpcoming = b.status === 'confirmed' || b.status === 'pending'
@@ -42,14 +42,14 @@ const sortedReservations = [...bookings].sort((a, b) => {
   return 0
 })
 
-
+// Filter based on hideCompleted toggle
 const filteredReservations = sortedReservations.filter(reservation => {
   const isCompleted = reservation.status === 'completed' || reservation.status === 'cancelled'
-
+  // If hideCompleted is true, hide completed ones; if false, show all
   return !hideCompleted || !isCompleted
 })
 
-
+// Debug logging for passenger dashboard statistics
 const upcomingCount = bookings.filter(r => r.status === 'confirmed' || r.status === 'pending').length
 const completedCount = bookings.filter(r => r.status === 'completed' || r.status === 'cancelled').length
 
@@ -95,10 +95,10 @@ const fetchBookings = async () => {
 
 useEffect(() => {
   fetchBookings()
-
+  // eslint-disable-next-line react-hooks/exhaustive-deps
 }, [])
 
-
+// Load review statuses when bookings change
 useEffect(() => {
   if (bookings.length > 0) {
     loadReviewStatuses(bookings)
@@ -178,7 +178,7 @@ const confirmCancellation = async () => {
   }
 }
 
-
+// Incident reporting functions
 const openIncidentModal = (trip) => {
   setSelectedTripForIncident(trip)
   setIncidentForm({
@@ -199,7 +199,7 @@ const submitIncidentReport = async () => {
   try {
     const token = localStorage.getItem('unigo_token')
     
-
+    // Debug: Log the booking data
     console.log('Reporting incident for booking:', selectedTripForIncident)
     console.log('Booking status:', selectedTripForIncident.status)
     console.log('Trip ID:', selectedTripForIncident.trip_id?._id || selectedTripForIncident.trip_id)
@@ -232,13 +232,13 @@ const submitIncidentReport = async () => {
   }
 }
 
-
+// Check if trip is eligible for incident reporting (completed/cancelled within 48 hours)
 const canReportIncident = (trip) => {
-
+  // Use booking status (reservation.status) instead of trip status
   if (!trip || !['completed', 'cancelled'].includes(trip.status)) return false
   
-
-
+  // For cancelled trips, use updated_at
+  // For completed trips, use trip arrival_time or updated_at
   const tripEndTime = trip.status === 'completed' 
     ? (trip.trip_id?.arrival_time || trip.updated_at || trip.created_at)
     : (trip.updated_at || trip.created_at)
@@ -582,7 +582,7 @@ Oui, annuler
               const err = await res.json().catch(() => ({}))
               throw new Error(err.error || `HTTP ${res.status}`)
             }
-
+            // Update review status
             const reviewKey = `${reviewTarget.trip_id?._id || reviewTarget.trip_id}-${driverId}`
             setReviewStatus(prev => ({ ...prev, [reviewKey]: true }))
             

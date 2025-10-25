@@ -11,6 +11,7 @@ const RejectedDocumentsModal = ({ isOpen, onClose, user }) => {
 
   if (!isOpen || !user) return null
 
+  // Get rejected documents
   const getRejectedDocuments = () => {
     if (!user.document_verification) return []
     
@@ -64,6 +65,8 @@ const RejectedDocumentsModal = ({ isOpen, onClose, user }) => {
 
       if (response.ok) {
         const data = await response.json()
+        setSuccess(`Document ${getDocumentDisplayName(docType)} téléchargé avec succès`)
+        // Refresh user data or close modal
         setTimeout(() => {
           window.location.reload()
         }, 2000)
@@ -78,6 +81,7 @@ const RejectedDocumentsModal = ({ isOpen, onClose, user }) => {
     }
   }
 
+  // Helper function to get document display names
   const getDocumentDisplayName = (docType) => {
     const displayNames = {
       'selfie_url': 'Selfie',

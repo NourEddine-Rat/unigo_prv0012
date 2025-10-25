@@ -97,7 +97,7 @@ const TripDetail = () => {
   const confirmReservation = async () => {
     if (!trip || !user) return
     
-
+    // Check if user account is verified and active
     if (user.status !== 'active') {
       toast.error('Votre compte n\'est pas encore actif. Vous ne pouvez pas réserver de trajets.')
       return

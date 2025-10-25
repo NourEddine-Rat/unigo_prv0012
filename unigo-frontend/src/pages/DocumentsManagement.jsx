@@ -19,7 +19,7 @@ const DocumentsManagement = () => {
   const [pagination, setPagination] = useState({})
   const { getAuthHeaders } = useAuth()
 
-
+  // Filters
   const [filters, setFilters] = useState({
     search: '',
     status: 'all',
@@ -41,7 +41,7 @@ const DocumentsManagement = () => {
     { value: 'admin', label: 'Administrateur', icon: UserCheck, color: 'purple' }
   ]
 
-
+  // Fetch users - EXACT COPY from UsersManagement
   const fetchUsers = async () => {
     try {
       setLoading(true)
@@ -53,7 +53,7 @@ const DocumentsManagement = () => {
         if (filters[key]) queryParams.append(key, filters[key])
       })
       
-
+      // Add documents_status filter for backend
       if (filters.status && filters.status !== 'all') {
         queryParams.append('documents_status', filters.status)
         console.log('🔍 DOCUMENTS - Added documents_status filter:', filters.status)
@@ -94,7 +94,7 @@ const DocumentsManagement = () => {
     fetchUsers()
   }, [filters])
 
-
+  // Handle document verification
   const handleDocumentVerification = async (data) => {
     try {
       const response = await fetch(`http://localhost:5000/api/admin/users/${selectedUser._id}/verify-documents`, {
@@ -128,12 +128,12 @@ const DocumentsManagement = () => {
     }
   }
 
-
+  // Handle individual document verification
   const handleIndividualDocumentVerification = async (updatedUser) => {
     console.log('🔍 DOCUMENTS MANAGEMENT - Received updated user:', updatedUser)
     console.log('🔍 DOCUMENTS MANAGEMENT - Document verification status:', updatedUser.document_verification)
     
-
+    // Update the users list with the new user data
     setUsers(prevUsers => 
       prevUsers.map(user => 
         user._id === updatedUser._id 
@@ -141,12 +141,12 @@ const DocumentsManagement = () => {
           : user
       )
     )
-
+    // Update the selected user
     setSelectedUser(updatedUser)
     console.log('🔍 DOCUMENTS MANAGEMENT - Updated selected user:', updatedUser)
   }
 
-
+  // Handle payment verification
   const handlePaymentVerification = async (data) => {
     try {
       const response = await fetch(`http://localhost:5000/api/admin/users/${selectedUser._id}/verify-payment`, {
@@ -179,7 +179,7 @@ const DocumentsManagement = () => {
     }
   }
 
-
+  // Open document viewer
   const openDocumentViewer = async (user) => {
     setSelectedUser(user)
     try {
@@ -201,7 +201,7 @@ const DocumentsManagement = () => {
     }
   }
 
-
+  // Close modals
   const closeModals = () => {
     setShowDocumentViewer(false)
     setSelectedUser(null)
@@ -210,7 +210,7 @@ const DocumentsManagement = () => {
     setSuccess('')
   }
 
-
+  // Get status info
   const getStatusInfo = (user) => {
     if (user.documents_verified) {
       return { label: 'Vérifiés', color: 'green', icon: CheckCircle }
@@ -221,15 +221,15 @@ const DocumentsManagement = () => {
     }
   }
 
-
+  // Get role info
   const getRoleInfo = (role) => {
     return roleOptions.find(r => r.value === role) || roleOptions[0]
   }
 
-
-
+  // NO CLIENT-SIDE FILTERING - Just like UsersManagement
+  // All filtering is done on the server side via API
   
-
+  // Debug logging
   console.log('🔍 DOCUMENTS - Component render:')
   console.log('🔍 DOCUMENTS - Users state:', users.length)
   console.log('🔍 DOCUMENTS - Loading state:', loading)

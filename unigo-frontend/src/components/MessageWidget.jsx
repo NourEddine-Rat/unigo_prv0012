@@ -12,6 +12,7 @@ const MessageWidget = () => {
   const [unreadCount, setUnreadCount] = useState(0)
   const [onlineUsers, setOnlineUsers] = useState(new Set())
 
+  // Socket.io connection
   useEffect(() => {
     const socket = io('http://localhost:5000')
     
@@ -43,6 +44,7 @@ const MessageWidget = () => {
     }
   }, [user])
 
+  // Fetch conversations
   const fetchConversations = async () => {
     try {
       const response = await fetch('http://localhost:5000/api/messages/conversations', {
@@ -51,6 +53,7 @@ const MessageWidget = () => {
       
       if (response.ok) {
         const data = await response.json()
+        // Get only the 3 most recent conversations
         setConversations((data.conversations || []).slice(0, 3))
       }
     } catch (error) {
@@ -60,6 +63,7 @@ const MessageWidget = () => {
     }
   }
 
+  // Fetch unread count
   const fetchUnreadCount = async () => {
     try {
       const response = await fetch('http://localhost:5000/api/messages/unread/count', {
@@ -79,6 +83,7 @@ const MessageWidget = () => {
     fetchConversations()
     fetchUnreadCount()
     
+    // Refresh every 30 seconds
     const interval = setInterval(() => {
       fetchConversations()
       fetchUnreadCount()
@@ -87,6 +92,7 @@ const MessageWidget = () => {
     return () => clearInterval(interval)
   }, [])
 
+  // Format time
   const formatTime = (date) => {
     const d = new Date(date)
     const now = new Date()
@@ -108,6 +114,7 @@ const MessageWidget = () => {
       animate={{ opacity: 1, y: 0 }}
       className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 hover:border-gray-300 transition-all"
     >
+      {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center">
@@ -127,6 +134,7 @@ const MessageWidget = () => {
         </Link>
       </div>
 
+      {/* Unread Count Badge */}
       {unreadCount > 0 && (
         <motion.div
           initial={{ scale: 0 }}
@@ -149,6 +157,7 @@ const MessageWidget = () => {
         </motion.div>
       )}
 
+      {/* Conversations List */}
       <div className="space-y-3">
         {loading ? (
           <div className="flex items-center justify-center py-8">
@@ -178,6 +187,7 @@ const MessageWidget = () => {
                 className="block p-4 rounded-xl hover:bg-gray-50 transition-colors border border-gray-100 bg-gray-50/50"
               >
                 <div className="flex items-start gap-3">
+                  {/* Avatar */}
                   <div className="relative flex-shrink-0">
                     {conv.otherUser?.selfie_url ? (
                       <img
@@ -195,6 +205,7 @@ const MessageWidget = () => {
                     )}
                   </div>
 
+                  {/* Content */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between mb-1">
                       <h3 className="font-semibold text-gray-800 text-sm truncate">
@@ -235,6 +246,7 @@ const MessageWidget = () => {
               </Link>
             ))}
 
+            {/* View All Link */}
             <Link
               to="/chat"
               className="block text-center py-3 text-sm text-black hover:text-gray-700 font-medium transition-colors"

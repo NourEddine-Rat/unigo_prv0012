@@ -49,14 +49,14 @@ if (e.target.name === 'email') {
 const validateEmail = async (email) => {
 if (!email) return false
 
-
+// Basic email format validation
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 if (!emailRegex.test(email)) {
   setEmailError('Format d\'email invalide')
   return false
 }
 
-
+// Email format is valid, clear any errors
 setEmailError('')
 return true
 }
@@ -74,7 +74,7 @@ setError('')
 if (step < 5) {
 setStep(step + 1)
 } else {
-
+// Validate email before submission
 const isEmailValid = await validateEmail(form.email)
 if (!isEmailValid) {
   return
@@ -84,17 +84,17 @@ setLoading(true)
 try {
 const formData = new FormData()
 
-
+// Add all form fields
 Object.keys(form).forEach(key => {
 if (form[key] !== null && form[key] !== undefined && form[key] !== '') {
 formData.append(key, form[key])
 }
 })
 
-
+// Add role
 formData.append('role', 'driver')
 
-
+// Add files
 Object.keys(files).forEach(key => {
 if (files[key]) {
 formData.append(key, files[key])
@@ -112,7 +112,7 @@ if (response.ok) {
 if (data.emailVerificationRequired) {
 setShowEmailVerification(true)
 } else {
-
+// Admin user - store data and redirect
 localStorage.setItem('unigo_token', data.token)
 localStorage.setItem('user', JSON.stringify(data.user))
 navigate('/dashboard/driver')

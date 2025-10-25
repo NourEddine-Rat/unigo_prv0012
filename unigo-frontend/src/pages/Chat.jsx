@@ -10,6 +10,7 @@ import { useAuth } from '../context/AuthContext'
 import io from 'socket.io-client'
 
 const Chat = () => {
+  const { userId, conversationId } = useParams() // Get userId or conversationId from URL
   const { user, getAuthHeaders } = useAuth()
   const [conversations, setConversations] = useState([])
   const [selectedConversation, setSelectedConversation] = useState(null)
@@ -28,20 +29,24 @@ const Chat = () => {
   const socket = useRef(null)
   const typingTimeout = useRef(null)
 
+  // Initialize Socket.io
   useEffect(() => {
     socket.current = io('http://localhost:5000')
     
     socket.current.on('connect', () => {
+      console.log('🔌 Connected to Socket.io')
       if (user?._id) {
         socket.current.emit('user_online', user._id)
       }
     })
 
     socket.current.on('new_message', (message) => {
+      console.log('📨 New message received:', message)
       
+      // Update conversations list
       fetchConversations()
       
-
+      // If message is for current conversation, add it
       if (selectedConversation && 
           (message.sender_id._id === selectedConversation.otherUser._id || 
            message.receiver_id._id === selectedConversation.otherUser._id)) {
@@ -74,7 +79,7 @@ const Chat = () => {
     })
 
     socket.current.on('messages_read', ({ conversation_id }) => {
-
+      // Update read status in messages
       setMessages(prev => prev.map(msg => ({
         ...msg,
         read: true
@@ -88,7 +93,7 @@ const Chat = () => {
     }
   }, [user, selectedConversation])
 
-
+  // Fetch conversations
   const fetchConversations = async () => {
     try {
       const response = await fetch('http://localhost:5000/api/messages/conversations', {
@@ -110,7 +115,7 @@ const Chat = () => {
     fetchConversations()
   }, [])
 
-
+  // Fetch user by ID and start conversation
   const fetchUserAndStartConversation = async (targetUserId) => {
     setLoadingUser(true)
     try {
@@ -120,7 +125,7 @@ const Chat = () => {
       
       if (response.ok) {
         const userData = await response.json()
-
+        // Create a conversation object for this user
         const conv = {
           otherUser: userData,
           lastMessage: null,
@@ -139,10 +144,10 @@ const Chat = () => {
     }
   }
 
-
+  // Handle conversationId from URL parameter (from notifications)
   useEffect(() => {
     if (conversationId && conversations.length > 0) {
-
+      // Find conversation by conversation_id
       const existingConv = conversations.find(
         conv => conv.conversation_id === conversationId
       )
@@ -153,12 +158,12 @@ const Chat = () => {
     }
   }, [conversationId, conversations])
 
-
+  // Handle userId from URL parameter
   useEffect(() => {
     if (!userId) return
     if (userId === user?._id) return // Prevent self-chat
 
-
+    // Try to find existing conversation; if not, start one directly
     const existingConv = conversations.find(
       conv => conv.otherUser._id === userId
     )
@@ -170,7 +175,7 @@ const Chat = () => {
     }
   }, [userId, conversations])
 
-
+  // Fetch messages for selected conversation
   const fetchMessages = async (otherUserId) => {
     try {
       const response = await fetch(`http://localhost:5000/api/messages/${otherUserId}`, {
@@ -186,7 +191,7 @@ const Chat = () => {
     }
   }
 
-
+  // Send message
   const handleSendMessage = async (e) => {
     e?.preventDefault()
     
@@ -230,7 +235,7 @@ const Chat = () => {
     }
   }
 
-
+  // Handle typing
   const handleTyping = () => {
     if (selectedConversation && socket.current) {
       socket.current.emit('typing', {
@@ -248,7 +253,7 @@ const Chat = () => {
     }
   }
 
-
+  // Handle file selection
   const handleFileSelect = (e) => {
     const file = e.target.files[0]
     if (!file) return
@@ -260,7 +265,7 @@ const Chat = () => {
 
     setSelectedFile(file)
 
-
+    // Create preview for images
     if (file.type.startsWith('image/')) {
       const reader = new FileReader()
       reader.onloadend = () => {
@@ -272,20 +277,20 @@ const Chat = () => {
     }
   }
 
-
+  // Select conversation
   const selectConversation = (conv) => {
     setSelectedConversation(conv)
     fetchMessages(conv.otherUser._id)
   }
 
 
-
+  // Filtered conversations
   const filteredConversations = conversations.filter(conv =>
     conv.otherUser?.first_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     conv.otherUser?.last_name?.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
-
+  // Format message time
   const formatTime = (date) => {
     const d = new Date(date)
     return d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })

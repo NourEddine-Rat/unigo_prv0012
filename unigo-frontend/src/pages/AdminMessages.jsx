@@ -33,7 +33,7 @@ const AdminMessages = () => {
   const socket = useRef(null)
   const typingTimeout = useRef(null)
 
-
+  // Initialize Socket.io
   useEffect(() => {
     socket.current = io('http://localhost:5000')
     
@@ -47,17 +47,17 @@ const AdminMessages = () => {
     socket.current.on('new_message', (message) => {
       console.log('📨 New message received:', message)
       
-
+      // Update conversations list
       fetchConversations()
       
-
+      // If message is for current conversation, add it
       if (selectedConversation && 
           (message.sender_id._id === selectedConversation.otherUser._id || 
            message.receiver_id._id === selectedConversation.otherUser._id)) {
         setMessages(prev => [...prev, message])
       }
 
-
+      // Update stats
       fetchStats()
     })
 
@@ -99,7 +99,7 @@ const AdminMessages = () => {
     }
   }, [user, selectedConversation])
 
-
+  // Fetch conversations
   const fetchConversations = async () => {
     try {
       const response = await fetch('http://localhost:5000/api/messages/conversations', {
@@ -117,7 +117,7 @@ const AdminMessages = () => {
     }
   }
 
-
+  // Fetch all users for new chat
   const fetchAllUsers = async () => {
     try {
       const response = await fetch('http://localhost:5000/api/admin/users?limit=100', {
@@ -133,7 +133,7 @@ const AdminMessages = () => {
     }
   }
 
-
+  // Fetch stats
   const fetchStats = async () => {
     try {
       const unreadRes = await fetch('http://localhost:5000/api/messages/unread/count', {
@@ -154,7 +154,7 @@ const AdminMessages = () => {
     fetchStats()
   }, [])
 
-
+  // Fetch messages for selected conversation
   const fetchMessages = async (otherUserId) => {
     try {
       const response = await fetch(`http://localhost:5000/api/messages/${otherUserId}`, {
@@ -170,7 +170,7 @@ const AdminMessages = () => {
     }
   }
 
-
+  // Send message
   const handleSendMessage = async (e) => {
     e?.preventDefault()
     
@@ -215,7 +215,7 @@ const AdminMessages = () => {
     }
   }
 
-
+  // Handle typing
   const handleTyping = () => {
     if (selectedConversation && socket.current) {
       socket.current.emit('typing', {
@@ -233,7 +233,7 @@ const AdminMessages = () => {
     }
   }
 
-
+  // Handle file selection
   const handleFileSelect = (e) => {
     const file = e.target.files[0]
     if (!file) return
@@ -256,7 +256,7 @@ const AdminMessages = () => {
     }
   }
 
-
+  // Start new conversation
   const startNewConversation = (selectedUser) => {
     const conv = {
       otherUser: selectedUser,
@@ -268,18 +268,18 @@ const AdminMessages = () => {
     setShowNewChat(false)
   }
 
-
+  // Select conversation
   const selectConversation = (conv) => {
     setSelectedConversation(conv)
     fetchMessages(conv.otherUser._id)
   }
 
-
+  // Auto-scroll to bottom
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
 
-
+  // Filter conversations and users
   const filteredConversations = conversations.filter(conv =>
     conv.otherUser?.first_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     conv.otherUser?.last_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -297,7 +297,7 @@ const AdminMessages = () => {
     return matchesSearch && matchesRole && u._id !== user._id
   })
 
-
+  // Format time
   const formatTime = (date) => {
     const d = new Date(date)
     return d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
@@ -706,7 +706,7 @@ const AdminMessages = () => {
             </form>
           </div>
         ) : (
-
+          // Show conversation list on mobile when conversations exist, otherwise show empty state
           conversations.length > 0 ? (
             <div className="md:hidden flex-1 flex flex-col bg-white">
               {/* Mobile Conversation List Header */}

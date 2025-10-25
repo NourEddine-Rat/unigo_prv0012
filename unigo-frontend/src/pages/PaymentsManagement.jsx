@@ -21,6 +21,7 @@ const PaymentsManagement = () => {
   const [pagination, setPagination] = useState({})
   const { getAuthHeaders } = useAuth()
 
+  // Filters
   const [filters, setFilters] = useState({
     search: '',
     status: 'all',
@@ -45,6 +46,7 @@ const PaymentsManagement = () => {
     { value: 'admin', label: 'Administrateur', icon: User, color: 'purple' }
   ]
 
+  // Fetch users - EXACT COPY from UsersManagement
   const fetchUsers = async () => {
     try {
       setLoading(true)
@@ -53,7 +55,7 @@ const PaymentsManagement = () => {
         if (filters[key]) queryParams.append(key, filters[key])
       })
       
-
+      // Add payment_status filter for backend
       if (filters.status && filters.status !== 'all') {
         queryParams.append('payment_status', filters.status)
       }
@@ -80,13 +82,13 @@ const PaymentsManagement = () => {
     fetchUsers()
   }, [filters])
 
-
+  // Open payment modal (view only)
   const openPaymentModal = (user) => {
     setSelectedUser(user)
     setShowPaymentModal(true)
   }
 
-
+  // Open document viewer to see/approve payment receipt
   const openDocumentViewer = async (user) => {
     setSelectedUser(user)
     setShowPaymentModal(false)
@@ -109,7 +111,7 @@ const PaymentsManagement = () => {
     }
   }
 
-
+  // Handle payment verification
   const handlePaymentVerification = async (data) => {
     try {
       const response = await fetch(`http://localhost:5000/api/admin/users/${selectedUser._id}/verify-payment`, {
@@ -139,7 +141,7 @@ const PaymentsManagement = () => {
     }
   }
 
-
+  // Handle individual document verification
   const handleIndividualDocumentVerification = (updatedUser) => {
     setUsers(prevUsers => 
       prevUsers.map(user => 
@@ -152,7 +154,7 @@ const PaymentsManagement = () => {
     fetchUsers()
   }
 
-
+  // Close modals
   const closeModals = () => {
     setShowPaymentModal(false)
     setShowDocumentViewer(false)
@@ -162,19 +164,19 @@ const PaymentsManagement = () => {
     setSuccess('')
   }
 
-
+  // Get payment status info
   const getPaymentStatusInfo = (user) => {
-
+    // Check subscription renewal status first
     if (user.subscription_renewal_pending) {
       return { label: 'Renouvellement en attente', color: 'orange', icon: RefreshCw }
     }
     
-
+    // Check if subscription is expired
     if (user.subscription_status === 'expired') {
       return { label: 'Abonnement expiré', color: 'red', icon: AlertTriangle }
     }
     
-
+    // Regular payment verification status
     if (user.payment_verified) {
       return { label: 'Vérifié', color: 'green', icon: CheckCircle }
     } else if (user.status === 'pending_payment') {
@@ -184,7 +186,7 @@ const PaymentsManagement = () => {
     }
   }
 
-
+  // Get subscription info
   const getSubscriptionInfo = (user) => {
     if (!user.subscription_end_date) {
       return null
@@ -203,13 +205,13 @@ const PaymentsManagement = () => {
     }
   }
 
-
+  // Get role info
   const getRoleInfo = (role) => {
     return roleOptions.find(r => r.value === role) || roleOptions[0]
   }
 
-
-
+  // NO CLIENT-SIDE FILTERING - Just like UsersManagement
+  // All filtering is done on the server side via API
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">

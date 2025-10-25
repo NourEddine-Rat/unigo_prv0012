@@ -19,9 +19,9 @@ const [isHeaderVisible, setIsHeaderVisible] = useState(true)
 const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 const { getAuthHeaders } = useAuth()
 
+// Removed mock data - using real API data
 
-
-
+// Fetch real stats from API
 useEffect(() => {
   const fetchStats = async () => {
     try {
@@ -41,7 +41,7 @@ useEffect(() => {
   fetchStats()
 }, [])
 
-
+// Handle scroll to hide header
 useEffect(() => {
   const handleScroll = () => {
     const scrollTop = window.pageYOffset || document.documentElement.scrollTop

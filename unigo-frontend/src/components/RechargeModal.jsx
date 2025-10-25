@@ -12,13 +12,14 @@ const RechargeModal = ({ isOpen, onClose, onSuccess }) => {
 
   const handlePointsChange = (e) => {
     const value = e.target.value;
+    // Allow typing any characters, we'll validate on submit
     setPoints(value);
   };
 
   const handleScreenshotChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      if (file.size > 5 * 1024 * 1024) {
+      if (file.size > 5 * 1024 * 1024) { // 5MB limit
         setError('File size must be less than 5MB');
         return;
       }
@@ -160,6 +161,7 @@ const RechargeModal = ({ isOpen, onClose, onSuccess }) => {
             </div>
           )}
 
+          {/* Step 2: Payment Screenshot */}
           {step === 2 && (
             <div className="space-y-6">
               <div>
@@ -234,6 +236,7 @@ const RechargeModal = ({ isOpen, onClose, onSuccess }) => {
             </div>
           )}
 
+          {/* Step 3: Success */}
           {step === 3 && (
             <div className="text-center space-y-6">
               <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
@@ -257,6 +260,7 @@ const RechargeModal = ({ isOpen, onClose, onSuccess }) => {
             </div>
           )}
 
+          {/* Error Message */}
           {error && (
             <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
               <div className="flex items-center space-x-2">
@@ -266,6 +270,7 @@ const RechargeModal = ({ isOpen, onClose, onSuccess }) => {
             </div>
           )}
 
+          {/* Success Message */}
           {success && (
             <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded-lg">
               <div className="flex items-center space-x-2">

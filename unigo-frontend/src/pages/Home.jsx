@@ -12,6 +12,19 @@ const FeatureCard = ({ icon: Icon, title, description, color }) => (
   </div>
 )
 
+const StepCard = ({ num, title, description }) => (
+  <div className="text-center md:text-left">
+    <div className="flex items-center justify-center md:justify-start gap-4 mb-4">
+      <div className="w-12 h-12 bg-gray-900 text-primary font-bold text-2xl rounded-full flex items-center justify-center">
+        {num}
+      </div>
+      <h3 className="text-2xl font-bold text-gray-900">{title}</h3>
+    </div>
+    <p className="mt-2 text-gray-600 max-w-sm mx-auto md:mx-0 md:pl-16">
+      {description}
+    </p>
+  </div>
+)
 
 const Home = () => {
   const navigate = useNavigate()
@@ -85,6 +98,30 @@ const Home = () => {
         </div>
       </section>
 
+      <section className="py-24 px-4 bg-primary">
+        <div className="max-w-5xl mx-auto">
+          <h2 className="text-4xl md:text-5xl font-extrabold text-gray-900 text-center mb-16">
+            Voyagez en 3 clics.
+          </h2>
+          <div className="grid md:grid-cols-1 gap-12">
+            <StepCard
+              num="1"
+              title="Recherchez votre trajet"
+              description="Dites-nous où vous allez. Des centaines de destinations sont disponibles."
+            />
+            <StepCard
+              num="2"
+              title="Réservez votre place"
+              description="Choisissez le conducteur et l'horaire qui vous arrangent. Payez en ligne en toute sécurité."
+            />
+            <StepCard
+              num="3"
+              title="Voyagez ensemble !"
+              description="Retrouvez votre conducteur au point de rendez-vous et profitez du voyage."
+            />
+          </div>
+        </div>
+      </section>
 
       <section className="py-24 px-4">
         <div className="max-w-7xl mx-auto">

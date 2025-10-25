@@ -122,7 +122,7 @@ headers: {
 if (response.ok) {
 const userData = await response.json()
 setUserBalance(userData.unicard_balance || 0)
-
+// Update localStorage with latest user data
 localStorage.setItem('unigo_user', JSON.stringify(userData))
 } else {
 console.error('Failed to load user profile')
@@ -163,10 +163,10 @@ description: `Transfer to ${recipientInfo?.first_name?.toUpperCase()} ${recipien
 const data = await response.json()
 
 if (response.ok) {
-
+// Update user balance
 setUserBalance(data.new_balance)
 
-
+// Refresh all data
 await Promise.all([loadUserProfile(), loadTransactions(), loadLimits()])
 
 setShowTransfer(false)
@@ -186,7 +186,7 @@ setTransferLoading(false)
 const handleUniIdChange = (e) => {
 const value = e.target.value.toUpperCase()
 setForm({ ...form, recipient_uni_id: value })
-
+// Lookup user after a short delay
 setTimeout(() => {
 lookupUserByUniId(value)
 }, 500)

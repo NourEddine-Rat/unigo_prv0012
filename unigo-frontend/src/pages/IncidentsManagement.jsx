@@ -45,7 +45,7 @@ const IncidentsManagement = () => {
   const [pagination, setPagination] = useState({})
   const { getAuthHeaders } = useAuth()
 
-
+  // Fetch incidents from API
   const fetchIncidents = async () => {
     try {
       setLoading(true)
@@ -79,7 +79,7 @@ const IncidentsManagement = () => {
     fetchIncidents()
   }, [filters])
 
-
+  // Handle incident status update
   const handleStatusUpdate = async (incidentId, newStatus) => {
     try {
       const response = await fetch(`http://localhost:5000/api/admin/incidents/${incidentId}`, {
@@ -103,7 +103,7 @@ const IncidentsManagement = () => {
     }
   }
 
-
+  // Handle incident deletion
   const handleDelete = async (incidentId) => {
     if (!window.confirm('Êtes-vous sûr de vouloir supprimer cet incident ?')) return
 
@@ -124,7 +124,7 @@ const IncidentsManagement = () => {
     }
   }
 
-
+  // Handle user profile view
   const handleViewProfile = async (userId) => {
     try {
       const response = await fetch(`http://localhost:5000/api/admin/users/${userId}`, {
@@ -143,7 +143,7 @@ const IncidentsManagement = () => {
     }
   }
 
-
+  // Handle evidence download
   const handleDownloadEvidence = (evidence) => {
     if (evidence.url) {
       const link = document.createElement('a')
@@ -156,7 +156,7 @@ const IncidentsManagement = () => {
     }
   }
 
-
+  // Handle image zoom
   const handleImageZoom = (evidence) => {
     if (evidence.type === 'image' && evidence.url) {
       setSelectedImage(evidence)
@@ -164,7 +164,7 @@ const IncidentsManagement = () => {
     }
   }
 
-
+  // Get status color
   const getStatusColor = (status) => {
     switch (status) {
       case 'reported': return 'bg-red-100 text-red-700'
@@ -175,7 +175,7 @@ const IncidentsManagement = () => {
     }
   }
 
-
+  // Get severity color
   const getSeverityColor = (severity) => {
     switch (severity) {
       case 'low': return 'bg-green-100 text-green-700'
@@ -186,7 +186,7 @@ const IncidentsManagement = () => {
     }
   }
 
-
+  // Get priority color
   const getPriorityColor = (priority) => {
     switch (priority) {
       case 'low': return 'bg-green-100 text-green-700'
@@ -197,7 +197,7 @@ const IncidentsManagement = () => {
     }
   }
 
-
+  // Get type label
   const getTypeLabel = (type) => {
     const types = {
       safety: 'Sécurité',
@@ -211,7 +211,7 @@ const IncidentsManagement = () => {
     return types[type] || type
   }
 
-
+  // Get status label
   const getStatusLabel = (status) => {
     const statuses = {
       reported: 'Signalé',
@@ -918,7 +918,7 @@ const IncidentsManagement = () => {
                   <button
                     onClick={() => {
                       setShowProfileModal(false)
-
+                      // You can add navigation to user management here
                     }}
                     className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors"
                   >
@@ -927,7 +927,7 @@ const IncidentsManagement = () => {
                   <button
                     onClick={() => {
                       setShowProfileModal(false)
-
+                      // You can add navigation to user management here
                       window.open(`/admin/users?search=${selectedUser.email}`, '_blank')
                     }}
                     className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-secondary transition-colors"
