@@ -1251,7 +1251,7 @@ app.post('/api/auth/register', upload.fields([
     }
     global.pendingRegistrations.set(userData.email, registrationData);
 
-     (non-blocking)
+    // Send verification email (non-blocking)
     sendVerificationEmail(userData.email, otp, userData.first_name)
       .then(() => {
         ;
@@ -1812,8 +1812,6 @@ app.post('/api/auth/forgot-password', async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
-
-
 app.post('/api/auth/reset-password', async (req, res) => {
   try {
     const { email, code, newPassword } = req.body;
@@ -1821,27 +1819,17 @@ app.post('/api/auth/reset-password', async (req, res) => {
     if (!email || !code || !newPassword) {
       return res.status(400).json({ error: 'Email, code, and new password are required' });
     }
-
-    
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(400).json({ error: 'Invalid email or code' });
     }
-
-    
     if (!user.password_reset_code || user.password_reset_code !== code) {
       return res.status(400).json({ error: 'Invalid or expired code' });
     }
-
-    
     if (!user.password_reset_expires || new Date() > user.password_reset_expires) {
       return res.status(400).json({ error: 'Code has expired. Please request a new one.' });
     }
-
-    
     const hashedPassword = await bcrypt.hash(newPassword, 10);
-
-    
     user.password = hashedPassword;
     user.password_reset_code = undefined;
     user.password_reset_expires = undefined;
