@@ -53,7 +53,7 @@ const UniversitiesManagement = () => {
   const [logoPreview, setLogoPreview] = useState(null)
   const { getAuthHeaders } = useAuth()
 
-  // Fetch universities from API
+
   const fetchUniversities = async () => {
     try {
       setLoading(true)
@@ -87,26 +87,26 @@ const UniversitiesManagement = () => {
     fetchUniversities()
   }, [filters])
 
-  // Handle form submission
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     try {
       const formDataToSend = new FormData()
       
-      // Add all form fields except coordinates
+
       Object.entries(formData).forEach(([key, value]) => {
         if (value && key !== 'latitude' && key !== 'longitude') {
           formDataToSend.append(key, value)
         }
       })
 
-      // Add coordinates separately
+
       if (formData.latitude && formData.longitude) {
         formDataToSend.append('latitude', formData.latitude)
         formDataToSend.append('longitude', formData.longitude)
       }
 
-      // Add logo file if selected
+
       if (logoFile) {
         formDataToSend.append('logo', logoFile)
       }
@@ -121,7 +121,7 @@ const UniversitiesManagement = () => {
         method,
         headers: {
           'Authorization': getAuthHeaders().Authorization
-          // Don't set Content-Type for FormData, let browser set it with boundary
+
         },
         body: formDataToSend
       })
@@ -145,7 +145,7 @@ const UniversitiesManagement = () => {
     }
   }
 
-  // Handle university deletion
+
   const handleDelete = async (universityId) => {
     if (!window.confirm('Êtes-vous sûr de vouloir supprimer cette université ?')) return
 
@@ -167,7 +167,7 @@ const UniversitiesManagement = () => {
     }
   }
 
-  // Handle edit
+
   const handleEdit = (university) => {
     setEditingUniversity(university)
     setFormData({
@@ -189,7 +189,7 @@ const UniversitiesManagement = () => {
     setShowModal(true)
   }
 
-  // Handle logo file change
+
   const handleLogoChange = (e) => {
     const file = e.target.files[0]
     if (file) {
@@ -200,7 +200,7 @@ const UniversitiesManagement = () => {
     }
   }
 
-  // Reset form
+
   const resetForm = () => {
     setFormData({
       name: '',
@@ -222,7 +222,7 @@ const UniversitiesManagement = () => {
     setEditingUniversity(null)
   }
 
-  // Get status color
+
   const getStatusColor = (status) => {
     switch (status) {
       case 'active': return 'bg-green-100 text-green-700'
@@ -232,7 +232,7 @@ const UniversitiesManagement = () => {
     }
   }
 
-  // Get status label
+
   const getStatusLabel = (status) => {
     const statuses = {
       active: 'Actif',

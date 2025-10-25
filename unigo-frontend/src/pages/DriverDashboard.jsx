@@ -9,11 +9,11 @@ import { useGeolocation } from '../hooks/useGeolocation'
 import useUniversities from '../hooks/useUniversities'
 import MapView from '../components/MapView'
 import MessageWidget from '../components/MessageWidget'
-// API configuration
+
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api'
 import toast from 'react-hot-toast'
 
-// API functions
+
 const createTrip = async (tripData) => {
   const token = localStorage.getItem('unigo_token')
   if (!token) {
@@ -100,7 +100,7 @@ const submitReview = async (reviewData) => {
   return await response.json()
 }
 
-// Helper function to format trip data for API
+
 const formatTripForAPI = (formData, userId) => {
   return {
     driver_id: userId,
@@ -191,12 +191,12 @@ const [driverBookings, setDriverBookings] = useState([])
 const [isLoadingBookings, setIsLoadingBookings] = useState(false)
 const [isHeaderVisible, setIsHeaderVisible] = useState(true)
 
-// Ref to store latest driverTrips for auto-start functionality
+
 const driverTripsRef = useRef([])
 
 const driverReservations = driverBookings
 
-// Calculate real statistics from database
+
 const publishedTrips = driverTrips.filter(trip => trip.status === 'published' || trip.status === 'scheduled' || trip.status === 'active')
 const totalPassengers = driverReservations.filter(r => r.status === 'confirmed' || r.status === 'completed').length
 const totalEarnings = driverReservations.filter(r => r.status === 'confirmed' || r.status === 'completed').reduce((sum, r) => {
@@ -204,17 +204,17 @@ const totalEarnings = driverReservations.filter(r => r.status === 'confirmed' ||
 return sum + (trip?.price_per_seat || 0) * r.seats_booked
 }, 0)
 
-// Calculate acceptance rate
+
 const totalBookingRequests = driverReservations.length
 const acceptedBookings = driverReservations.filter(r => r.status === 'confirmed' || r.status === 'completed').length
 const acceptanceRate = totalBookingRequests > 0 ? Math.round((acceptedBookings / totalBookingRequests) * 100) : 100
 
-// Additional statistics
+
 const completedTrips = driverTrips.filter(trip => trip.status === 'completed').length
 const activeTrips = driverTrips.filter(trip => trip.status === 'active').length
 const pendingBookings = driverReservations.filter(r => r.status === 'pending').length
 
-// Debug logging for statistics
+
 console.log('Driver Dashboard Statistics:', {
   totalTrips: driverTrips.length,
   publishedTrips: publishedTrips.length,
@@ -260,13 +260,13 @@ const handleInputChange = (field, value) => {
 setForm({ ...form, [field]: value })
 setActiveField(field)
 
-// Clear previous timeout
+
 if (searchTimeout) {
 clearTimeout(searchTimeout)
 }
 
 if ((field === 'departure_text' || field === 'arrival_text') && value.length > 1) {
-// Show immediate results from predefined locations
+
 const predefinedMatches = allLocations.filter(loc =>
 loc.name.toLowerCase().includes(value.toLowerCase())
 ).slice(0, 3)
@@ -274,12 +274,12 @@ loc.name.toLowerCase().includes(value.toLowerCase())
 setSuggestions({ ...suggestions, [field]: predefinedMatches })
 setShowSuggestions(true)
 
-// Debounce the geocoding search
+
 const timeout = setTimeout(async () => {
 setIsSearchingPlaces(true)
 try {
 const placeMatches = await searchPlaces(value, 7)
-// Combine and deduplicate results
+
 const allMatches = [...predefinedMatches, ...placeMatches]
 const uniqueMatches = allMatches.filter((match, index, self) => 
 index === self.findIndex(m => m.name === match.name && m.city === match.city)
@@ -306,7 +306,7 @@ setSuggestions({ ...suggestions, [field]: [] })
 setShowSuggestions(false)
 setActiveField(null)
 
-// Handle location selection for both predefined and geocoded places
+
 const locationData = {
 address: location.name,
 coordinates: location.coordinates || location.coords
@@ -318,7 +318,7 @@ setForm({ ...form, departure_text: location.name, departure_coords: locationData
 setForm({ ...form, arrival_text: location.name, arrival_coords: locationData.coordinates })
 }
 
-// Calculate distance and duration if both locations are selected
+
 if (field === 'departure_text' && form.arrival_coords) {
 calculateTripDetails(locationData.coordinates, form.arrival_coords)
 } else if (field === 'arrival_text' && form.departure_coords) {
@@ -344,7 +344,7 @@ setForm({ ...form, departure_text: location.address, departure_coords: location.
 setForm({ ...form, arrival_text: location.address, arrival_coords: location.coordinates })
 }
 
-// Calculate trip details if both locations are selected
+
 if (mode === 'departure' && form.arrival_coords) {
 calculateTripDetails(location.coordinates, form.arrival_coords)
 } else if (mode === 'arrival' && form.departure_coords) {
@@ -378,10 +378,10 @@ setShowConfirmCancel(true)
 
 const confirmTripCancellation = async () => {
 try {
-// Cancel trip via API
+
 await cancelTrip(selectedTrip._id, cancelReason)
 
-// Remove trip from the driver's trip list
+
 setDriverTrips(prevTrips => prevTrips.filter(trip => trip._id !== selectedTrip._id))
 
 const tripReservations = driverBookings.filter(r => (r.trip_id?._id || r.trip_id) === selectedTrip._id && r.status === 'confirmed')
@@ -395,11 +395,11 @@ toast.error('Erreur lors de l\'annulation du trajet. Veuillez réessayer.')
 }
 }
 
-// Edit trip function
+
 const handleEditTrip = (trip) => {
 setEditingTrip(trip)
 setFormMode('edit')
-// Pre-fill the form with trip data
+
 setForm({
 departure_text: trip.departure?.address || trip.departure_text || '',
 departure_coords: trip.departure?.coordinates || trip.departure_coords,
@@ -422,11 +422,11 @@ setCurrentStep('details')
 setShowCreateTrip(true)
 }
 
-// Delete trip function
+
 const handleDeleteTrip = async (trip) => {
 if (window.confirm('Êtes-vous sûr de vouloir supprimer ce trajet ?')) {
 try {
-// Delete trip via API
+
 const token = localStorage.getItem('unigo_token')
 if (!token) {
 throw new Error('No authentication token found')
@@ -443,7 +443,7 @@ if (!response.ok) {
 throw new Error(`HTTP error! status: ${response.status}`)
 }
 
-// Remove trip from the driver's trip list
+
 setDriverTrips(prevTrips => prevTrips.filter(t => t._id !== trip._id))
 toast.success('Trajet supprimé avec succès!')
 } catch (error) {
@@ -453,7 +453,7 @@ toast.error('Erreur lors de la suppression du trajet. Veuillez réessayer.')
 }
 }
 
-// Review handlers
+
 const handleReviewPassenger = (passenger, trip) => {
   setSelectedPassenger(passenger)
   setSelectedTripForReview(trip)
@@ -489,7 +489,7 @@ e.preventDefault()
       comment: reviewForm.comment
     })
     
-    // Update review status
+
     const key = `${selectedTripForReview._id}-${selectedPassenger._id}`
     setReviewStatus(prev => ({ ...prev, [key]: true }))
     
@@ -507,26 +507,26 @@ e.preventDefault()
 const handleSubmit = async (e) => {
 e.preventDefault()
 if (currentStep === 'details') {
-// Validate required fields
+
 if (!form.departure_text || !form.arrival_text || !form.date_time || !form.price_per_seat) {
 toast.error('Veuillez remplir tous les champs obligatoires')
 return
 }
 setCurrentStep('map')
 } else if (currentStep === 'map') {
-// Validate coordinates
+
 if (!form.departure_coords || !form.arrival_coords) {
 toast.error('Veuillez sélectionner les coordonnées sur la carte')
 return
 }
 setCurrentStep('review')
 } else if (currentStep === 'review') {
-// Create or update the trip
+
 try {
 const tripData = formatTripForAPI(form, user?._id)
 
 if (formMode === 'edit' && editingTrip && editingTrip._id) {
-// Update existing trip
+
 const token = localStorage.getItem('unigo_token')
 const response = await fetch(`${API_BASE_URL}/trips/${editingTrip._id}`, {
 method: 'PUT',
@@ -543,7 +543,7 @@ throw new Error(`HTTP error! status: ${response.status}`)
 
 const updatedTrip = await response.json()
 
-// Update trip in the driver's trip list
+
 setDriverTrips(prevTrips => prevTrips.map(trip => 
 trip._id === editingTrip._id ? updatedTrip.trip : trip
 ))
@@ -552,12 +552,12 @@ toast.success('Trajet modifié avec succès!')
 setEditingTrip(null)
 setFormMode('create')
 } else {
-// Create new trip
+
 console.log('Creating trip with data:', tripData)
 const response = await createTrip(tripData)
 console.log('Trip creation response:', response)
 
-// Add trip to the driver's trip list
+
 setDriverTrips(prevTrips => [response.trip, ...prevTrips])
 
 toast.success('Trajet créé avec succès!')
@@ -568,7 +568,7 @@ resetForm()
 } catch (error) {
 console.error('Error saving trip:', error)
 if (error.message.includes('Failed to fetch') || error.message.includes('ERR_CONNECTION_REFUSED')) {
-// Fallback: Create trip locally when API is not available
+
 const fallbackTrip = {
 id: Date.now(),
 driver_id: user?._id,
@@ -581,7 +581,7 @@ driver_name: `${user?.first_name?.toUpperCase()} ${user?.last_name?.toUpperCase(
 driver_avatar: null
 }
 
-// Add trip to the driver's trip list
+
 setDriverTrips(prevTrips => [fallbackTrip, ...prevTrips])
 
 toast.success('Trajet créé localement (serveur non disponible)')
@@ -646,7 +646,7 @@ setCurrentStep('map')
 }
 }
 
-// Cleanup effect
+
 useEffect(() => {
 return () => {
 if (searchTimeout) {
@@ -666,7 +666,7 @@ setDriverTrips(apiTrips)
 setIsBackendConnected(true)
 } catch (error) {
 console.error('Error loading trips:', error)
-// Fallback to mock data if API fails
+
 const initialTrips = trips.filter(t => t.driver_id === user?._id)
 setDriverTrips(initialTrips)
 if (error.message.includes('Failed to fetch') || error.message.includes('ERR_CONNECTION_REFUSED')) {
@@ -703,30 +703,30 @@ loadDriverTrips()
 loadDriverBookings()
 }, [user?._id])
 
-// Load review statuses when driverBookings change
+
 useEffect(() => {
   if (driverBookings.length > 0) {
     loadReviewStatuses(driverBookings)
   }
 }, [driverBookings])
 
-// Keep ref synchronized with driverTrips
+
 useEffect(() => {
   driverTripsRef.current = driverTrips
 }, [driverTrips])
 
-// Auto-start trips when their scheduled time arrives
+
 useEffect(() => {
   const checkAndAutoStartTrips = async () => {
     const now = new Date()
     
-    // Check each trip that's published or scheduled
+
     for (const trip of driverTripsRef.current) {
       if ((trip.status === 'published' || trip.status === 'scheduled') && trip.departure_time) {
         const departureTime = new Date(trip.departure_time)
         const timeDiff = departureTime - now
         
-        // Auto-start if departure time has passed or is within 1 minute
+
         if (timeDiff <= 60000 && timeDiff >= -300000) { // Within 1 min before to 5 min after
           try {
             const token = localStorage.getItem('unigo_token')
@@ -753,16 +753,16 @@ useEffect(() => {
     }
   }
   
-  // Check every 30 seconds
+
   const interval = setInterval(checkAndAutoStartTrips, 30000)
   
-  // Also check immediately
+
   checkAndAutoStartTrips()
   
   return () => clearInterval(interval)
 }, [])
 
-// Scroll handler to hide/show header
+
 useEffect(() => {
   const handleScroll = () => {
     const scrollY = window.scrollY
@@ -773,7 +773,7 @@ useEffect(() => {
   return () => window.removeEventListener('scroll', handleScroll)
 }, [])
 
-// Close suggestions when clicking outside
+
 useEffect(() => {
   const handleClickOutside = (event) => {
     if (showSuggestions && !event.target.closest('.suggestion-container')) {
@@ -820,7 +820,7 @@ const loadReviewStatuses = async (bookings) => {
   setReviewStatus(prev => ({ ...prev, ...newReviewStatus }))
 }
 
-// Incident reporting functions
+
 const openIncidentModal = (booking) => {
   setSelectedBookingForIncident(booking)
   setIncidentForm({
@@ -868,7 +868,7 @@ const submitIncidentReport = async () => {
   }
 }
 
-// Check if booking is eligible for incident reporting (completed within 48 hours)
+
 const canReportIncident = (booking) => {
   if (!booking || booking.status !== 'completed') return false
   

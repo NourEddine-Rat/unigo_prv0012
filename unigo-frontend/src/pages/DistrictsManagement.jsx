@@ -34,7 +34,7 @@ const DistrictsManagement = () => {
 
   const cities = ['Rabat', 'Salé', 'Témara', 'Casablanca', 'Fès', 'Marrakech']
 
-  // Fetch districts
+
   const fetchDistricts = async () => {
     try {
       setLoading(true)
@@ -56,7 +56,7 @@ const DistrictsManagement = () => {
     fetchDistricts()
   }, [])
 
-  // Handle form submission
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
@@ -98,7 +98,7 @@ const DistrictsManagement = () => {
     }
   }
 
-  // Handle delete
+
   const handleDelete = async (id) => {
     if (!window.confirm('Êtes-vous sûr de vouloir supprimer ce district ?')) return
 
@@ -119,7 +119,7 @@ const DistrictsManagement = () => {
     }
   }
 
-  // Reset form
+
   const resetForm = () => {
     setFormData({
       name: '',
@@ -132,7 +132,7 @@ const DistrictsManagement = () => {
     })
   }
 
-  // Open modal for editing
+
   const openEditModal = (district) => {
     setEditingDistrict(district)
     setFormData({
@@ -147,14 +147,14 @@ const DistrictsManagement = () => {
     setShowModal(true)
   }
 
-  // Open modal for creating
+
   const openCreateModal = () => {
     setEditingDistrict(null)
     resetForm()
     setShowModal(true)
   }
 
-  // Close modal
+
   const closeModal = () => {
     setShowModal(false)
     setEditingDistrict(null)
@@ -163,7 +163,7 @@ const DistrictsManagement = () => {
     setSuccess('')
   }
 
-  // Filter districts
+
   const filteredDistricts = districts.filter(district => {
     const matchesSearch = district.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          district.address.toLowerCase().includes(searchTerm.toLowerCase())

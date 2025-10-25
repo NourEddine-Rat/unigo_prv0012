@@ -2,7 +2,6 @@ import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-route
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
 import ProtectedRoute from './components/ProtectedRoute'
-import Home from './pages/Home'
 import Search from './pages/Search'
 import SignupRole from './pages/SignupRole'
 import SignupPassenger from './pages/SignupPassenger'
@@ -28,7 +27,7 @@ const AppContent = () => {
       <Navbar />
       <main className="flex-1">
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<Navigate to="/search" replace />} />
           <Route path="/search" element={<Search />} />
           <Route path="/signup" element={<SignupRole />} />
           <Route path="/signup/passenger" element={<SignupPassenger />} />
@@ -100,7 +99,7 @@ const AppContent = () => {
               </ProtectedRoute>
             }
           />
-          <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="*" element={<Navigate to="/search" replace />} />
         </Routes>
       </main>
       {showFooter && <Footer />}

@@ -35,9 +35,7 @@ const NotificationsPage = ({ isOpen, onClose }) => {
       
       if (response.ok) {
         const data = await response.json()
-        console.log('API Response:', data)
         
-        // Normalize notification data structure
         const normalizedNotifications = (data.notifications || []).map(notif => ({
           ...notif,
           isRead: notif.read || notif.isRead || false,
@@ -45,7 +43,6 @@ const NotificationsPage = ({ isOpen, onClose }) => {
         }))
         setNotifications(normalizedNotifications)
       } else {
-        console.error('API Error:', response.status, response.statusText)
         setNotifications([])
       }
     } catch (error) {
@@ -74,7 +71,6 @@ const NotificationsPage = ({ isOpen, onClose }) => {
       )
     } catch (error) {
       console.error('Error marking notification as read:', error)
-      // Update locally for development
       setNotifications(prev => 
         prev.map(notif => 
           notif._id === notificationId ? { ...notif, isRead: true, read: true } : notif
@@ -99,7 +95,6 @@ const NotificationsPage = ({ isOpen, onClose }) => {
       )
     } catch (error) {
       console.error('Error marking all notifications as read:', error)
-      // Update locally for development
       setNotifications(prev => 
         prev.map(notif => ({ ...notif, isRead: true, read: true }))
       )
@@ -172,7 +167,6 @@ const NotificationsPage = ({ isOpen, onClose }) => {
 
   const unreadCount = notifications.filter(notif => !notif.isRead && !notif.read).length
 
-  // Handle notification click - just mark as read
   const handleNotificationClick = (notification) => {
     if (!notification.isRead && !notification.read) {
       markAsRead(notification._id)
@@ -183,7 +177,6 @@ const NotificationsPage = ({ isOpen, onClose }) => {
     <AnimatePresence>
       {isOpen && (
         <>
-          {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -192,7 +185,6 @@ const NotificationsPage = ({ isOpen, onClose }) => {
             className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50"
           />
           
-          {/* Modal */}
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -200,7 +192,6 @@ const NotificationsPage = ({ isOpen, onClose }) => {
             className="fixed inset-0 z-50 flex items-center justify-center p-4"
           >
             <div className="bg-white rounded-2xl shadow-2xl border border-gray-200 w-full max-w-2xl max-h-[80vh] flex flex-col">
-              {/* Header */}
               <div className="flex items-center justify-between p-6 border-b border-gray-200">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center">
@@ -221,7 +212,6 @@ const NotificationsPage = ({ isOpen, onClose }) => {
                 </button>
               </div>
 
-              {/* Filters */}
               <div className="p-4 border-b border-gray-200">
                 <div className="flex gap-2">
                   {[
@@ -244,7 +234,6 @@ const NotificationsPage = ({ isOpen, onClose }) => {
                 </div>
               </div>
 
-              {/* Notifications List */}
               <div className="flex-1 overflow-y-auto">
                 {loading ? (
                   <div className="flex items-center justify-center py-12">
@@ -307,7 +296,6 @@ const NotificationsPage = ({ isOpen, onClose }) => {
                 )}
               </div>
 
-              {/* Footer */}
               {notifications.length > 0 && unreadCount > 0 && (
                 <div className="p-4 border-t border-gray-200">
                   <button

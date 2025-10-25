@@ -22,7 +22,7 @@ const UsersManagement = () => {
   const [pagination, setPagination] = useState({})
   const { getAuthHeaders } = useAuth()
 
-  // Filters and search
+
   const [filters, setFilters] = useState({
     search: '',
     role: '',
@@ -62,7 +62,7 @@ const UsersManagement = () => {
     { value: 'admin', label: 'Administrateur', icon: UserCheck, color: 'purple' }
   ]
 
-  // Fetch users
+
   const fetchUsers = async () => {
     try {
       setLoading(true)
@@ -90,7 +90,7 @@ const UsersManagement = () => {
     }
   }
 
-  // Fetch stats
+
   const fetchStats = async () => {
     try {
       const response = await fetch('http://localhost:5000/api/admin/stats', {
@@ -111,7 +111,7 @@ const UsersManagement = () => {
   }, [filters])
 
 
-  // Handle delete user
+
   const handleDeleteUser = async (userId) => {
     if (!window.confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?')) return
 
@@ -133,7 +133,7 @@ const UsersManagement = () => {
     }
   }
 
-  // Open modals
+
   const openUserModal = (user) => {
     setSelectedUser(user)
     setShowUserModal(true)
@@ -164,7 +164,7 @@ const UsersManagement = () => {
   }
 
   const openDocumentViewer = (user) => {
-    // Redirect to DocumentsManagement for document verification
+
     window.location.href = '/admin/documents'
   }
 
@@ -178,14 +178,14 @@ const UsersManagement = () => {
     setSuccess('')
   }
 
-  // Get role info
+
   const getRoleInfo = (role) => {
     return roleOptions.find(r => r.value === role) || roleOptions[0]
   }
 
-  // Get status info - prioritize actual user status over document verification
+
   const getStatusInfo = (user) => {
-    // Map user status to display info - prioritize actual status
+
     const statusMap = {
       'pending_payment': { label: 'En attente de paiement', color: 'yellow', icon: Clock },
       'pending_verification': { label: 'En attente de vérification', color: 'blue', icon: FileText },
@@ -194,7 +194,7 @@ const UsersManagement = () => {
       'banned': { label: 'Banni', color: 'red', icon: Ban }
     }
     
-    // Return the status info based on user.status
+
     return statusMap[user.status] || statusMap['pending_payment']
   }
 

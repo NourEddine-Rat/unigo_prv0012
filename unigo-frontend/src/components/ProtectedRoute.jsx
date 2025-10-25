@@ -68,14 +68,12 @@ const StyledWrapper = styled.div`
     justify-content: flex-end;
     overflow-x: hidden;
   }
-  /* truck upper body */
   .truckBody {
     width: 80px;
     height: fit-content;
     margin-bottom: 4px;
     animation: motion 1s linear infinite;
   }
-  /* truck suspension animation*/
   @keyframes motion {
     0% {
       transform: translateY(0px);
@@ -87,7 +85,6 @@ const StyledWrapper = styled.div`
       transform: translateY(0px);
     }
   }
-  /* truck's tires */
   .truckTires {
     width: 80px;
     height: fit-content;
@@ -298,7 +295,6 @@ const ProtectedRoute = ({ children, role }) => {
   useEffect(() => {
     const checkSubscription = async () => {
       if (user && user.role !== 'admin') {
-        // Check subscription status from user object
         const now = new Date()
         const endDate = user.subscription_end_date ? new Date(user.subscription_end_date) : null
         
@@ -329,10 +325,9 @@ const ProtectedRoute = ({ children, role }) => {
   }
 
   if (role && user.role !== role) {
-    return <Navigate to="/" replace />
+    return <Navigate to="/search" replace />
   }
 
-  // Check subscription expiration for non-admin users
   if (user.role !== 'admin' && subscriptionStatus === 'expired' && !user.subscription_renewal_pending) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-50 p-4">
@@ -341,7 +336,6 @@ const ProtectedRoute = ({ children, role }) => {
     )
   }
 
-  // Check if renewal is pending
   if (user.role !== 'admin' && user.subscription_renewal_pending) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-50 p-4">
@@ -364,11 +358,9 @@ const ProtectedRoute = ({ children, role }) => {
     )
   }
 
-  // Check for rejected documents
   const hasRejectedDocuments = user.role !== 'admin' && user.document_verification && 
     Object.values(user.document_verification).some(status => status === 'rejected')
 
-  // Show rejected documents modal if user has rejected documents
   if (hasRejectedDocuments) {
     return (
       <>
@@ -406,7 +398,6 @@ const ProtectedRoute = ({ children, role }) => {
     )
   }
 
-  // Admin users are exempt from verification requirements
   if (user.role !== 'admin' && (user.status === 'pending_payment' || user.status === 'pending_verification')) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-50 p-4">

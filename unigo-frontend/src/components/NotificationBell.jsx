@@ -21,7 +21,6 @@ const NotificationBell = () => {
   const dropdownRef = useRef(null)
   const socket = useRef(null)
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -33,7 +32,6 @@ const NotificationBell = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
-  // Socket.io connection
   useEffect(() => {
     socket.current = io('http://localhost:5000')
     
@@ -44,13 +42,10 @@ const NotificationBell = () => {
     })
 
     socket.current.on('new_notification', (notification) => {
-      console.log('🔔 New notification received:', notification)
       
-      // Add to list
       setNotifications(prev => [notification, ...prev])
       setUnreadCount(prev => prev + 1)
       
-      // Show toast notification
       showToastNotification(notification)
     })
 
@@ -61,7 +56,6 @@ const NotificationBell = () => {
     }
   }, [user])
 
-  // Fetch notifications
   const fetchNotifications = async () => {
     setLoading(true)
     try {
@@ -71,11 +65,9 @@ const NotificationBell = () => {
       
       if (response.ok) {
         const data = await response.json()
-        console.log('NotificationBell API Response:', data)
         setNotifications(data.notifications || [])
         setUnreadCount(data.unreadCount || 0)
       } else {
-        console.error('NotificationBell API Error:', response.status, response.statusText)
         setNotifications([])
         setUnreadCount(0)
       }
@@ -92,7 +84,6 @@ const NotificationBell = () => {
     fetchNotifications()
   }, [])
 
-  // Show toast notification
   const showToastNotification = (notification) => {
     const icon = getNotificationIcon(notification.type)
     
@@ -142,7 +133,6 @@ const NotificationBell = () => {
     })
   }
 
-  // Get icon for notification type
   const getNotificationIcon = (type) => {
     const iconClass = "w-10 h-10 p-2 rounded-full"
     
@@ -172,7 +162,6 @@ const NotificationBell = () => {
     }
   }
 
-  // Mark notification as read
   const markAsRead = async (notificationId) => {
     try {
       await fetch(`http://localhost:5000/api/notifications/${notificationId}/read`, {
@@ -189,7 +178,6 @@ const NotificationBell = () => {
     }
   }
 
-  // Mark all as read
   const markAllAsRead = async () => {
     try {
       await fetch('http://localhost:5000/api/notifications/read-all', {
@@ -206,7 +194,6 @@ const NotificationBell = () => {
     }
   }
 
-  // Delete notification
   const deleteNotification = async (notificationId, e) => {
     e.stopPropagation()
     
@@ -224,14 +211,12 @@ const NotificationBell = () => {
     }
   }
 
-  // Handle notification click - just mark as read
   const handleNotificationClick = (notification) => {
     if (!notification.read) {
       markAsRead(notification._id)
     }
   }
 
-  // Helper function to get document display names
   const getDocumentDisplayName = (docType) => {
     const displayNames = {
       'selfie_url': 'Selfie',
@@ -247,7 +232,6 @@ const NotificationBell = () => {
     return displayNames[docType] || docType;
   };
 
-  // Format time
   const formatTime = (date) => {
     if (!date || isNaN(new Date(date).getTime())) {
       return 'Date invalide'
@@ -276,7 +260,6 @@ const NotificationBell = () => {
         onClose={() => setShowNotificationsPage(false)} 
       />
       <div className="relative" ref={dropdownRef}>
-        {/* Bell Icon */}
         <button
           onClick={() => setShowDropdown(!showDropdown)}
           className="relative p-1.5 text-gray-600 hover:text-black hover:bg-gray-100 rounded-lg transition-all"
@@ -293,7 +276,6 @@ const NotificationBell = () => {
           )}
         </button>
 
-        {/* Dropdown */}
         <AnimatePresence>
           {showDropdown && (
             <motion.div
@@ -303,7 +285,6 @@ const NotificationBell = () => {
               transition={{ duration: 0.2 }}
               className="absolute right-0 mt-2 w-96 bg-white rounded-xl shadow-xl border border-gray-200 z-50 overflow-hidden"
             >
-              {/* Header */}
               <div className="p-4 border-b border-gray-100 flex items-center justify-between bg-white">
                 <div className="flex items-center gap-2 text-gray-900">
                   <Bell className="w-5 h-5" />
@@ -325,7 +306,6 @@ const NotificationBell = () => {
                 )}
               </div>
 
-              {/* Notifications List */}
               <div className="max-h-96 overflow-y-auto">
                 {loading ? (
                   <div className="flex items-center justify-center py-8">
@@ -391,7 +371,6 @@ const NotificationBell = () => {
                 )}
               </div>
 
-              {/* Footer */}
               {notifications.length > 0 && (
                 <div className="p-3 border-t border-gray-100 bg-gray-50">
                   <button

@@ -27,7 +27,6 @@ const MapView = ({
     zoom: 12
   });
 
-  // Update viewport when current location changes
   useEffect(() => {
     if (currentLocation) {
       setViewState(prev => ({
@@ -39,19 +38,16 @@ const MapView = ({
     }
   }, [currentLocation]);
 
-  // Auto-scale map to show both departure and arrival points
   useEffect(() => {
     if (selectedDeparture && selectedArrival) {
       const departure = selectedDeparture.coordinates;
       const arrival = selectedArrival.coordinates;
       
-      // Calculate bounds to fit both points
       const minLng = Math.min(departure.lng, arrival.lng);
       const maxLng = Math.max(departure.lng, arrival.lng);
       const minLat = Math.min(departure.lat, arrival.lat);
       const maxLat = Math.max(departure.lat, arrival.lat);
       
-      // Add padding around the points
       const padding = 0.01; // degrees
       const bounds = {
         minLng: minLng - padding,
@@ -60,11 +56,9 @@ const MapView = ({
         maxLat: maxLat + padding
       };
       
-      // Calculate center point
       const centerLng = (bounds.minLng + bounds.maxLng) / 2;
       const centerLat = (bounds.minLat + bounds.maxLat) / 2;
       
-      // Calculate appropriate zoom level based on distance
       const distance = calculateDistance(departure.lat, departure.lng, arrival.lat, arrival.lng);
       let zoom = 12;
       if (distance < 5) zoom = 14;
@@ -84,21 +78,17 @@ const MapView = ({
   const [selectedLocation, setSelectedLocation] = useState(null);
   const [showTripDetails, setShowTripDetails] = useState(null);
 
-  // Default viewport for Rabat-Salé-Témara region
   const defaultViewport = {
     longitude: -6.8167,
     latitude: 33.9981,
     zoom: 11
   };
 
-  // Handle map click for location selection
   const handleMapClick = useCallback(async (event) => {
     const { lngLat } = event;
     
     if (selectionMode && onPointSelect) {
-      // Handle point selection for departure/arrival
       try {
-        // Try to get address for the clicked location
         const response = await fetch(
           `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lngLat.lat}&lon=${lngLat.lng}&addressdetails=1&accept-language=fr`,
           {
@@ -135,7 +125,6 @@ const MapView = ({
         onPointSelect(location, selectionMode);
       }
     } else if (onLocationSelect) {
-      // Original location selection behavior
       const location = {
         lat: lngLat.lat,
         lng: lngLat.lng,
@@ -146,7 +135,6 @@ const MapView = ({
     }
   }, [onLocationSelect, onPointSelect, selectionMode]);
 
-  // Handle trip marker click
   const handleTripClick = useCallback((trip) => {
     setShowTripDetails(trip);
     if (onTripSelect) {
@@ -155,7 +143,6 @@ const MapView = ({
   }, [onTripSelect]);
 
 
-  // Filter trips within search radius
   const nearbyTrips = trips.filter(trip => {
     if (!trip.departure?.coordinates || !trip.arrival?.coordinates) return false;
     
@@ -172,7 +159,6 @@ const MapView = ({
     return departureDistance <= searchRadius || arrivalDistance <= searchRadius;
   });
 
-  // Get trip marker color based on availability and price
   const getTripMarkerColor = (trip) => {
     if (trip.available_seats === 0) return '#ef4444'; // Red for full
     if (trip.price_per_seat <= 10) return '#22c55e'; // Green for cheap
@@ -180,7 +166,6 @@ const MapView = ({
     return '#3b82f6'; // Blue for expensive
   };
 
-  // Format time for display
   const formatTime = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleTimeString('fr-FR', { 
@@ -189,7 +174,6 @@ const MapView = ({
     });
   };
 
-  // Format date for display
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     const today = new Date();
@@ -221,7 +205,6 @@ const MapView = ({
         mapStyle="mapbox://styles/mapbox/streets-v12"
         attributionControl={false}
       >
-        {/* Search radius circle */}
         <Source
           id="search-radius"
           type="geojson"
@@ -254,10 +237,8 @@ const MapView = ({
           />
         </Source>
 
-        {/* Trip markers */}
         {nearbyTrips.map((trip) => (
           <React.Fragment key={trip._id}>
-            {/* Departure marker */}
             <Marker
               longitude={trip.departure.coordinates.lng}
               latitude={trip.departure.coordinates.lat}
@@ -277,7 +258,6 @@ const MapView = ({
               </div>
             </Marker>
 
-            {/* Arrival marker */}
             <Marker
               longitude={trip.arrival.coordinates.lng}
               latitude={trip.arrival.coordinates.lat}
@@ -297,7 +277,6 @@ const MapView = ({
               </div>
             </Marker>
 
-            {/* Trip route line */}
             <Source
               id={`route-${trip._id}`}
               type="geojson"
@@ -326,7 +305,6 @@ const MapView = ({
           </React.Fragment>
         ))}
 
-        {/* Current location marker */}
         {currentLocation && (
           <Marker
             longitude={currentLocation.lng}
@@ -340,7 +318,6 @@ const MapView = ({
           </Marker>
         )}
 
-        {/* Selected departure marker */}
         {selectedDeparture && (
           <Marker
             longitude={selectedDeparture.coordinates.lng}
@@ -352,7 +329,6 @@ const MapView = ({
           </Marker>
         )}
 
-        {/* Selected arrival marker */}
         {selectedArrival && (
           <Marker
             longitude={selectedArrival.coordinates.lng}
@@ -364,7 +340,6 @@ const MapView = ({
           </Marker>
         )}
 
-        {/* Distance display between departure and arrival */}
         {selectedDeparture && selectedArrival && (
           <Marker
             longitude={(selectedDeparture.coordinates.lng + selectedArrival.coordinates.lng) / 2}
@@ -384,7 +359,6 @@ const MapView = ({
           </Marker>
         )}
 
-        {/* Route visualization - Direct line between selected locations */}
         {selectedDeparture && selectedArrival && (
           <Source
             id="direct-route"
@@ -401,7 +375,6 @@ const MapView = ({
               properties: {}
             }}
           >
-            {/* Shadow line for depth */}
             <Layer
               id="direct-route-shadow"
               type="line"
@@ -411,7 +384,6 @@ const MapView = ({
                 "line-opacity": 0.3
               }}
             />
-            {/* Main dashed line */}
             <Layer
               id="direct-route-line"
               type="line"
@@ -425,7 +397,6 @@ const MapView = ({
           </Source>
         )}
 
-        {/* Route visualization - Detailed route if available */}
         {routeData && routeData.coordinates && (
           <Source
             id="route"
@@ -451,7 +422,6 @@ const MapView = ({
           </Source>
         )}
 
-        {/* Selected location marker */}
         {selectedLocation && (
           <Marker
             longitude={selectedLocation.lng}
@@ -463,7 +433,6 @@ const MapView = ({
           </Marker>
         )}
 
-        {/* Trip details popup */}
         {showTripDetails && (
           <Popup
             longitude={showTripDetails.departure.coordinates.lng}
@@ -487,7 +456,6 @@ const MapView = ({
               </div>
 
               <div className="space-y-3">
-                {/* Route */}
                 <div className="flex items-start space-x-3">
                   <div className="flex flex-col items-center">
                     <div className="w-3 h-3 rounded-full bg-green-500"></div>
@@ -510,7 +478,6 @@ const MapView = ({
                   </div>
                 </div>
 
-                {/* Trip details */}
                 <div className="flex items-center justify-between pt-3 border-t border-gray-200">
                   <div className="flex items-center space-x-4">
                     <div className="flex items-center space-x-1">
@@ -534,7 +501,6 @@ const MapView = ({
                   </div>
                 </div>
 
-                {/* Driver info */}
                 {showTripDetails.driver_id && (
                   <div className="pt-3 border-t border-gray-200">
                     <div className="flex items-center space-x-2">
@@ -555,11 +521,9 @@ const MapView = ({
                   </div>
                 )}
 
-                {/* Action buttons */}
                 <div className="pt-3 border-t border-gray-200">
                   <button
                     onClick={() => {
-                      // Handle trip booking
                       console.log('Book trip:', showTripDetails._id);
                     }}
                     className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg font-medium hover:bg-blue-700 transition-colors"
@@ -573,7 +537,6 @@ const MapView = ({
         )}
       </Map>
 
-      {/* Map controls */}
       <div className="absolute top-4 right-4 space-y-2">
         <div className="bg-white rounded-lg shadow-lg p-3">
           <div className="text-sm font-medium text-gray-700 mb-2">Légende</div>
@@ -598,7 +561,6 @@ const MapView = ({
         </div>
       </div>
 
-      {/* Selection mode indicator */}
       {selectionMode && (
         <div className="absolute top-4 left-4 bg-blue-500 text-white rounded-lg shadow-lg p-3 max-w-xs">
           <div className="flex items-center gap-2 mb-2">
@@ -613,7 +575,6 @@ const MapView = ({
         </div>
       )}
 
-      {/* Trip count */}
       <div className="absolute bottom-4 left-4">
         <div className="bg-white rounded-lg shadow-lg px-4 py-2">
           <div className="text-sm font-medium text-gray-700">

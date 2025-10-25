@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Menu, X, User, LogOut, Settings, Copy, Check, Search, HelpCircle, Home, CreditCard, Bell, Calendar } from 'lucide-react'
+import { Menu, X, User, LogOut, Settings, Copy, Check, Search, CreditCard, Bell, Calendar } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useAuth } from '../context/AuthContext'
 import NotificationBell from './NotificationBell'
@@ -24,23 +24,16 @@ const Navbar = () => {
 
   const handleLogout = () => {
     logout()
-    navigate('/')
+    navigate('/search')
     setDropdown(false)
   }
 
   const getSubscriptionInfo = () => {
     if (!user || user.role === 'admin') {
-      console.log('Navbar - No subscription info (admin or no user)', { user: user?.role })
       return null
     }
     
     if (!user.subscription_end_date) {
-      console.log('Navbar - No subscription_end_date found', { 
-        hasUser: !!user, 
-        role: user.role,
-        subscription_end_date: user.subscription_end_date,
-        subscription_status: user.subscription_status 
-      })
       return null
     }
     
@@ -52,12 +45,6 @@ const Navbar = () => {
     if (daysRemaining < 0) color = 'red'
     else if (daysRemaining <= 7) color = 'orange'
     
-    console.log('Navbar - Subscription info calculated', {
-      endDate: user.subscription_end_date,
-      daysRemaining,
-      color,
-      isExpired: daysRemaining < 0
-    })
     
     return {
       date: endDate.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' }),
@@ -70,15 +57,14 @@ const Navbar = () => {
   const subscriptionInfo = getSubscriptionInfo()
 
   const links = [
-    { to: '/search', label: 'Rechercher' },
-    { to: '/about', label: 'Comment ça marche' }
+    { to: '/search', label: 'Rechercher' }
   ]
 
   return (
     <nav className="sticky top-0 z-50 bg-white border-b border-gray-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          <Link to="/" className="flex items-center group">
+          <Link to="/search" className="flex items-center group">
             <span className="text-2xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors" style={{ fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', letterSpacing: '-0.02em' }}>
               unigo
             </span>
@@ -217,11 +203,9 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Mobile Menu Overlay */}
       <AnimatePresence>
         {open && (
           <>
-            {/* Backdrop */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -230,7 +214,6 @@ const Navbar = () => {
               className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
             />
             
-            {/* Slide-in Panel */}
           <motion.div
               initial={{ x: '100%' }}
               animate={{ x: 0 }}
@@ -238,7 +221,6 @@ const Navbar = () => {
               transition={{ type: 'spring', damping: 25, stiffness: 200 }}
               className="fixed top-0 right-0 h-full w-80 max-w-[85vw] bg-white shadow-2xl z-50 md:hidden"
             >
-              {/* Header */}
               <div className="flex items-center justify-between p-4 border-b border-gray-200">
                 <div className="flex items-center">
                   <span className="text-xl font-bold text-gray-900" style={{ fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', letterSpacing: '-0.02em' }}>
@@ -253,7 +235,6 @@ const Navbar = () => {
                 </button>
               </div>
 
-              {/* User Info */}
               {user && (
                 <div className="p-6 border-b border-gray-200 bg-gray-50">
                   <div className="flex items-center space-x-3">
@@ -339,20 +320,9 @@ const Navbar = () => {
                 </div>
               )}
 
-              {/* Navigation Links */}
               <div className="flex-1 overflow-y-auto">
                 <div className="p-6 space-y-2">
-                  {/* Main Navigation */}
                   <div className="space-y-1">
-                    <Link
-                      to="/"
-                      onClick={() => setOpen(false)}
-                      className="flex items-center space-x-3 px-4 py-3 rounded-xl hover:bg-gray-100 transition-colors group"
-                    >
-                      <Home className="w-5 h-5 text-gray-600 group-hover:text-primary" />
-                      <span className="font-medium text-gray-900">Accueil</span>
-                    </Link>
-                    
                     <Link
                       to="/search"
                       onClick={() => setOpen(false)}
@@ -361,18 +331,8 @@ const Navbar = () => {
                       <Search className="w-5 h-5 text-gray-600 group-hover:text-primary" />
                       <span className="font-medium text-gray-900">Rechercher</span>
                     </Link>
-
-                    <Link
-                      to="/about"
-                      onClick={() => setOpen(false)}
-                      className="flex items-center space-x-3 px-4 py-3 rounded-xl hover:bg-gray-100 transition-colors group"
-                    >
-                      <HelpCircle className="w-5 h-5 text-gray-600 group-hover:text-primary" />
-                      <span className="font-medium text-gray-900">Comment ça marche</span>
-                </Link>
                   </div>
 
-                  {/* User-specific Navigation */}
               {user ? (
                     <div className="mt-6 pt-6 border-t border-gray-200">
                       <div className="space-y-1">
@@ -429,7 +389,6 @@ const Navbar = () => {
                     </div>
                   )}
 
-                  {/* Logout Button */}
                   {user && (
                     <div className="mt-6 pt-6 border-t border-gray-200">
                       <button

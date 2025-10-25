@@ -39,21 +39,21 @@ sort_order: 'asc'
 })
 const [showFilters, setShowFilters] = useState(false)
 const [filters, setFilters] = useState({
-  // Trip filters
+
   priceRange: [0, 200],
   departureTime: 'all', // 'all', 'morning', 'afternoon', 'evening', 'night'
   tripType: 'all', // 'all', 'oneway', 'roundtrip'
   availableSeats: 1,
   paymentMethods: [], // ['cash', 'unicard', 'mixed']
   
-  // Driver filters
+
   driverRating: 0, // minimum rating
   driverExperience: 'all', // 'all', 'new', 'experienced', 'expert'
   vehicleType: 'all', // 'all', 'car', 'van', 'bus'
   smokingPolicy: 'all', // 'all', 'smoking', 'non_smoking'
   genderPreference: 'all', // 'all', 'male', 'female'
   
-  // Additional filters
+
   verifiedDriver: false,
   instantBooking: false,
   flexibleTiming: false
@@ -82,7 +82,7 @@ const [isSearchingPlaces, setIsSearchingPlaces] = useState(false)
 const [mapSelectionMode, setMapSelectionMode] = useState(null) // 'departure', 'arrival', or null
 const { universities } = useUniversities()
 
-// Close suggestions when clicking outside
+
 useEffect(() => {
   const handleClickOutside = (event) => {
     if (showSuggestions && !event.target.closest('.suggestion-container')) {
@@ -97,7 +97,7 @@ useEffect(() => {
   }
 }, [showSuggestions])
 
-// Booking modal state
+
 const [showBookingModal, setShowBookingModal] = useState(false)
 const [showSignupModal, setShowSignupModal] = useState(false)
 const [bookingTrip, setBookingTrip] = useState(null)
@@ -137,7 +137,7 @@ const requestLocationPermission = async () => {
 setShowLocationPermissionModal(false)
 setIsGettingLocation(true)
 try {
-// Try to get precise GPS location
+
 const location = await getLocationWithAddress()
 setCurrentLocation(location)
 setUserLocation(location)
@@ -168,7 +168,7 @@ setForm({ ...form, arrival: location.address })
 }
 setMapCenter(location.coordinates)
 
-// Calculate route if both departure and arrival are selected
+
 if (type === 'departure' && selectedArrival) {
 calculateRoute(location.coordinates, selectedArrival.coordinates)
 } else if (type === 'arrival' && selectedDeparture) {
@@ -196,7 +196,7 @@ console.error('Error calculating route:', error)
 const handleSearch = async () => {
 setIsLoading(true)
 try {
-    // Debug logging
+
     console.log('🔍 Starting search with:', {
       departure: form.departure,
       arrival: form.arrival,
@@ -208,7 +208,7 @@ try {
       selectedArrival
     })
     
-// Save search to history
+
 const searchQuery = {
 departure: form.departure,
 arrival: form.arrival,
@@ -218,7 +218,7 @@ timestamp: new Date().toISOString()
 }
 setSearchHistory(prev => [searchQuery, ...prev.slice(0, 4)])
 
-    // Try API search first
+
     let apiResults = []
     try {
       const token = localStorage.getItem('unigo_token')
@@ -248,22 +248,22 @@ setSearchHistory(prev => [searchQuery, ...prev.slice(0, 4)])
 
     let workingResults = []
     if (apiResults.length > 0) {
-      // Filter by text or proximity
+
       workingResults = apiResults.filter(trip => {
         const depAddr = trip.departure?.address || trip.departure_text || ''
         const arrAddr = trip.arrival?.address || trip.arrival_text || ''
         
-        // Enhanced text matching - try multiple approaches
+
         const matchDepText = !form.departure || (() => {
           const searchTerm = form.departure.toLowerCase().trim()
           const tripAddr = depAddr.toLowerCase().trim()
           
           if (!searchTerm || !tripAddr) return false
           
-          // Direct substring match
+
           if (tripAddr.includes(searchTerm)) return true
           
-          // Try matching against individual words (more flexible)
+
           const searchWords = searchTerm.split(/[\s,.-]+/).filter(w => w.length > 1)
           const tripWords = tripAddr.split(/[\s,.-]+/)
           
@@ -274,14 +274,14 @@ setSearchHistory(prev => [searchQuery, ...prev.slice(0, 4)])
             tripWords
           })
           
-          // Check if most search words are found in trip address
+
           const matchingWords = searchWords.filter(word => 
             tripWords.some(tripWord => tripWord.includes(word))
           )
           
-          // If no matches with word splitting, try more flexible matching
+
           if (matchingWords.length === 0 && searchWords.length > 0) {
-            // Try matching any search word against any trip word (more flexible)
+
             const flexibleMatches = searchWords.filter(searchWord => 
               tripWords.some(tripWord => 
                 tripWord.includes(searchWord) || searchWord.includes(tripWord)
@@ -301,8 +301,8 @@ setSearchHistory(prev => [searchQuery, ...prev.slice(0, 4)])
           
           const matchRatio = searchWords.length > 0 ? matchingWords.length / searchWords.length : 0
           
-          // More lenient matching when trip address is much shorter than search term
-          // This handles cases where user searches with full address but trip has short name
+
+
           const isTripMuchShorter = tripWords.length < searchWords.length * 0.5
           const isTripVeryShort = tripWords.length <= 2 && searchWords.length > 3
           const adjustedThreshold = isTripVeryShort ? 0.1 : (isTripMuchShorter ? 0.2 : 0.5) // 10% vs 20% vs 50% threshold
@@ -326,10 +326,10 @@ setSearchHistory(prev => [searchQuery, ...prev.slice(0, 4)])
           
           if (!searchTerm || !tripAddr) return false
           
-          // Direct substring match
+
           if (tripAddr.includes(searchTerm)) return true
           
-          // Try matching against individual words (more flexible)
+
           const searchWords = searchTerm.split(/[\s,.-]+/).filter(w => w.length > 1)
           const tripWords = tripAddr.split(/[\s,.-]+/)
           
@@ -340,14 +340,14 @@ setSearchHistory(prev => [searchQuery, ...prev.slice(0, 4)])
             tripWords
           })
           
-          // Check if most search words are found in trip address
+
           const matchingWords = searchWords.filter(word => 
             tripWords.some(tripWord => tripWord.includes(word))
           )
           
-          // If no matches with word splitting, try more flexible matching
+
           if (matchingWords.length === 0 && searchWords.length > 0) {
-            // Try matching any search word against any trip word (more flexible)
+
             const flexibleMatches = searchWords.filter(searchWord => 
               tripWords.some(tripWord => 
                 tripWord.includes(searchWord) || searchWord.includes(tripWord)
@@ -367,8 +367,8 @@ setSearchHistory(prev => [searchQuery, ...prev.slice(0, 4)])
           
           const matchRatio = searchWords.length > 0 ? matchingWords.length / searchWords.length : 0
           
-          // More lenient matching when trip address is much shorter than search term
-          // This handles cases where user searches with full address but trip has short name
+
+
           const isTripMuchShorter = tripWords.length < searchWords.length * 0.5
           const isTripVeryShort = tripWords.length <= 2 && searchWords.length > 3
           const adjustedThreshold = isTripVeryShort ? 0.1 : (isTripMuchShorter ? 0.2 : 0.5) // 10% vs 20% vs 50% threshold
@@ -415,7 +415,7 @@ setSearchHistory(prev => [searchQuery, ...prev.slice(0, 4)])
         
         const matches = (matchDepText || matchDepProx) && (matchArrText || matchArrProx) && matchDate && matchPrice && matchSeats
         
-        // Debug all filter conditions for ALL trips
+
         console.log(`🔍 Trip ${apiResults.indexOf(trip) + 1} - All conditions:`, {
           tripId: trip._id || trip.id,
           depAddr: depAddr,
@@ -451,11 +451,11 @@ setSearchHistory(prev => [searchQuery, ...prev.slice(0, 4)])
         }))
       })
 
-      // Enrich with distance if possible
+
       workingResults = workingResults.map(trip => {
         let distance_km = trip.distance_km
         try {
-          // Calculate distance between trip's departure and arrival points
+
           if (trip.departure?.coordinates && trip.arrival?.coordinates) {
             distance_km = calculateDistance(
               trip.departure.coordinates.lat,
@@ -464,7 +464,7 @@ setSearchHistory(prev => [searchQuery, ...prev.slice(0, 4)])
               trip.arrival.coordinates.lng
             )
           }
-          // If no trip coordinates, try to calculate from selected points to trip departure
+
           else if (selectedDeparture?.coordinates && trip.departure?.coordinates) {
             distance_km = calculateDistance(
               selectedDeparture.coordinates.lat,
@@ -479,7 +479,7 @@ setSearchHistory(prev => [searchQuery, ...prev.slice(0, 4)])
         return { ...trip, distance_km }
       })
     } else {
-      // Fallback to mock data
+
 let filtered = trips.filter(trip => {
 const matchDeparture = !form.departure || trip.departure_text.toLowerCase().includes(form.departure.toLowerCase())
 const matchArrival = !form.arrival || trip.arrival_text.toLowerCase().includes(form.arrival.toLowerCase())
@@ -499,7 +499,7 @@ distance: calculateDistance(userLocation.lat, userLocation.lng, trip.departure_c
 }
 
       workingResults = filtered.map(trip => {
-        // Calculate actual trip distance between departure and arrival
+
         let tripDistance = 0
         try {
           if (trip.departure_coords && trip.arrival_coords) {
@@ -542,7 +542,7 @@ profile_picture: trip.driver_avatar
       })
     }
 
-// Sort results
+
     const sortedResults = workingResults.sort((a, b) => {
 if (form.sort_by === 'price_per_seat') {
         return form.sort_order === 'asc' ? (a.price_per_seat || 0) - (b.price_per_seat || 0) : (b.price_per_seat || 0) - (a.price_per_seat || 0)
@@ -562,7 +562,7 @@ return 0
       })
     }
     
-    // Apply filters to the results
+
     const filteredResults = applyFilters(sortedResults)
     console.log('🔍 After filtering:', filteredResults.length, 'trips remain')
     
@@ -577,31 +577,31 @@ setIsLoading(false)
 }
 }
 
-// Apply all filters to search results
+
 const applyFilters = (trips) => {
   return trips.filter(trip => {
-    // Price filter
+
     if (trip.price_per_seat < filters.priceRange[0] || trip.price_per_seat > filters.priceRange[1]) {
       return false
     }
 
-    // Available seats filter
+
     if (trip.available_seats < filters.availableSeats) {
       return false
     }
 
-    // Trip type filter
+
     if (filters.tripType !== 'all' && trip.type !== filters.tripType) {
       return false
     }
 
-    // Payment methods filter
+
     if (filters.paymentMethods.length > 0) {
       const hasMatchingPayment = trip.payment_modes?.some(mode => filters.paymentMethods.includes(mode))
       if (!hasMatchingPayment) return false
     }
 
-    // Departure time filter
+
     if (filters.departureTime !== 'all') {
       const hour = new Date(trip.departure_time).getHours()
       switch (filters.departureTime) {
@@ -612,12 +612,12 @@ const applyFilters = (trips) => {
       }
     }
 
-    // Driver rating filter
+
     if (filters.driverRating > 0 && trip.driver_id?.rating_average < filters.driverRating) {
       return false
     }
 
-    // Driver experience filter
+
     if (filters.driverExperience !== 'all') {
       const totalTrips = trip.driver_id?.total_trips || 0
       switch (filters.driverExperience) {
@@ -627,22 +627,22 @@ const applyFilters = (trips) => {
       }
     }
 
-    // Smoking policy filter
+
     if (filters.smokingPolicy !== 'all') {
       const isNonSmoking = trip.tags?.includes('non_smoke') || trip.non_smoking
       if (filters.smokingPolicy === 'non_smoking' && !isNonSmoking) return false
       if (filters.smokingPolicy === 'smoking' && isNonSmoking) return false
     }
 
-    // Gender preference filter
+
     if (filters.genderPreference !== 'all') {
-      // Check if trip has female_only tag
+
       const isFemaleOnly = trip.tags?.includes('female_only')
       if (filters.genderPreference === 'female' && !isFemaleOnly) return false
       if (filters.genderPreference === 'male' && isFemaleOnly) return false
     }
 
-    // Verified driver filter
+
     if (filters.verifiedDriver && trip.driver_id?.status !== 'active') {
       return false
     }
@@ -651,7 +651,7 @@ const applyFilters = (trips) => {
   })
 }
 
-// Filter update handlers
+
 const updateFilter = (key, value) => {
   setFilters(prev => ({ ...prev, [key]: value }))
 }
@@ -681,15 +681,15 @@ const resetFilters = () => {
     instantBooking: false,
     flexibleTiming: false
   })
-  // Re-run search with reset filters
+
   if (currentStep === 'results') {
     handleSearch()
   }
 }
 
-// Apply filters to current results
+
 const applyFiltersToResults = () => {
-  // Re-run the search with current filters applied
+
   handleSearch()
 }
 
@@ -698,7 +698,7 @@ setSelectedTrip(trip)
 }
 
 const openBookingModal = (trip) => {
-  // Check if user account is verified and active
+
   if (!user) {
     setBookingTrip(trip)
     setShowSignupModal(true)
@@ -729,7 +729,7 @@ const submitBooking = async () => {
     } else if (bookingPayment === 'cash') {
       cash_amount = total
     } else {
-      // mixed
+
       const ua = Number(bookingUniAmount)
       if (ua < 0 || ua > total) {
         toast.error('Montant UniCard invalide')
@@ -780,13 +780,13 @@ const handleInputChange = (field, value) => {
 setForm({ ...form, [field]: value })
 setActiveField(field)
 
-// Clear previous timeout
+
 if (searchTimeout) {
 clearTimeout(searchTimeout)
 }
 
 if ((field === 'departure' || field === 'arrival') && value.length > 1) {
-// Show immediate results from predefined locations
+
 const predefinedMatches = allLocations.filter(loc =>
 loc.name.toLowerCase().includes(value.toLowerCase())
 ).slice(0, 3)
@@ -795,12 +795,12 @@ console.log('🔍 Input change:', { field, value, predefinedMatches: predefinedM
 setSuggestions({ ...suggestions, [field]: predefinedMatches })
 setShowSuggestions(true)
 
-// Debounce the geocoding search
+
 const timeout = setTimeout(async () => {
 setIsSearchingPlaces(true)
 try {
 const placeMatches = await searchPlaces(value, 7)
-// Combine and deduplicate results
+
 const allMatches = [...predefinedMatches, ...placeMatches]
 const uniqueMatches = allMatches.filter((match, index, self) => 
 index === self.findIndex(m => m.name === match.name && m.city === match.city)
@@ -816,7 +816,7 @@ setIsSearchingPlaces(false)
 
 setSearchTimeout(timeout)
 } else if (value.length === 0) {
-// Only hide suggestions when input is completely empty
+
 setSuggestions({ ...suggestions, [field]: [] })
 setShowSuggestions(false)
 setActiveField(null)
@@ -824,14 +824,14 @@ setActiveField(null)
 }
 
 const selectSuggestion = (field, location) => {
-// Use full address for better matching with database trips
+
 const addressToUse = location.full_address || location.address || location.name
 setForm({ ...form, [field]: addressToUse })
 setSuggestions({ ...suggestions, [field]: [] })
 setShowSuggestions(false)
 setActiveField(null)
 
-// Handle location selection for both predefined and geocoded places
+
 const locationData = {
 address: addressToUse,
 coordinates: location.coordinates || location.coords
@@ -843,7 +843,7 @@ setSelectedDeparture(locationData)
 setSelectedArrival(locationData)
 }
 
-// Calculate route if both locations are selected
+
 if (field === 'departure' && selectedArrival) {
 calculateRoute(locationData.coordinates, selectedArrival.coordinates)
 } else if (field === 'arrival' && selectedDeparture) {
@@ -879,12 +879,12 @@ setCurrentStep('search')
 }
 
 const handleMapClick = (location) => {
-// Handle map click for location selection
+
 console.log('Map clicked:', location)
 }
 
 const handleMapPointSelect = (location, mode) => {
-// Handle point selection from map
+
 if (mode === 'departure') {
 setSelectedDeparture(location)
 setForm({ ...form, departure: location.address })
@@ -893,14 +893,14 @@ setSelectedArrival(location)
 setForm({ ...form, arrival: location.address })
 }
 
-// Calculate route if both locations are selected
+
 if (mode === 'departure' && selectedArrival) {
 calculateRoute(location.coordinates, selectedArrival.coordinates)
 } else if (mode === 'arrival' && selectedDeparture) {
 calculateRoute(selectedDeparture.coordinates, location.coordinates)
 }
 
-// Clear selection mode
+
 setMapSelectionMode(null)
 toast.success(`${mode === 'departure' ? 'Point de départ' : 'Point d\'arrivée'} sélectionné!`)
 }
@@ -916,12 +916,12 @@ toast('Sélection annulée')
 }
 
 useEffect(() => {
-// Auto-get current location on page load with a small delay to ensure hook is initialized
+
 const getInitialLocation = async () => {
-// Wait a bit for the geolocation hook to initialize
+
 await new Promise(resolve => setTimeout(resolve, 200))
 
-// Only try once on page load
+
 if (currentLocation) {
   console.log('Location already set, skipping initial location request');
   return;
@@ -945,7 +945,7 @@ coordinates: { lat: location.lat, lng: location.lng }
 toast.success('Position GPS détectée avec succès!')
 } catch (error) {
 console.error('Error getting initial location:', error)
-// Fallback to Rabat if GPS fails
+
 const fallbackLocation = {
 lat: 33.9981,
 lng: -6.8167,
@@ -973,7 +973,7 @@ setIsGettingLocation(false)
 getInitialLocation()
 }, [])
 
-// Cleanup effect
+
 useEffect(() => {
   return () => {
     resetRequest()

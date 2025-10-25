@@ -47,7 +47,7 @@ const ForgotPassword = () => {
         setStep(2)
         setResendCooldown(60)
         
-        // Start countdown
+
         const interval = setInterval(() => {
           setResendCooldown(prev => {
             if (prev <= 1) {
@@ -86,7 +86,7 @@ const ForgotPassword = () => {
         setSuccess('Code de vérification renvoyé!')
         setResendCooldown(60)
         
-        // Start countdown
+
         const interval = setInterval(() => {
           setResendCooldown(prev => {
             if (prev <= 1) {

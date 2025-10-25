@@ -71,14 +71,12 @@ const DocumentViewer = ({
       setVerificationNotes('')
       setDocumentStatus('')
       
-      // Prevent background scrolling - more robust approach
       const scrollY = window.scrollY
       document.body.style.position = 'fixed'
       document.body.style.top = `-${scrollY}px`
       document.body.style.width = '100%'
       document.body.classList.add('modal-open')
     } else {
-      // Restore background scrolling
       const scrollY = document.body.style.top
       document.body.style.position = ''
       document.body.style.top = ''
@@ -89,7 +87,6 @@ const DocumentViewer = ({
       }
     }
     
-    // Cleanup function to restore scrolling when component unmounts
     return () => {
       document.body.style.position = ''
       document.body.style.top = ''
@@ -156,12 +153,9 @@ const DocumentViewer = ({
 
       if (response.ok) {
         const updatedUser = await response.json()
-        console.log('🔍 DOCUMENT VERIFICATION - Updated user:', updatedUser)
-        console.log('🔍 DOCUMENT VERIFICATION - Document verification status:', updatedUser.document_verification)
         setSuccess(`Document ${status === 'approved' ? 'approuvé' : 'rejeté'} avec succès`)
         // Update the user data in parent component
         if (onVerifyDocuments) {
-          console.log('🔍 DOCUMENT VERIFICATION - Calling onVerifyDocuments with:', updatedUser)
           onVerifyDocuments(updatedUser)
         }
       } else {
@@ -193,11 +187,9 @@ const DocumentViewer = ({
 
       if (response.ok) {
         const updatedUser = await response.json()
-        console.log('🔍 PAYMENT VERIFICATION - Updated user:', updatedUser)
         setSuccess(`Paiement ${status === 'approved' ? 'approuvé' : 'rejeté'} avec succès`)
         // Update the user data in parent component
         if (onVerifyDocuments) {
-          console.log('🔍 PAYMENT VERIFICATION - Calling onVerifyDocuments with:', updatedUser)
           onVerifyDocuments(updatedUser)
         }
       } else {
@@ -218,7 +210,6 @@ const DocumentViewer = ({
       return user?.payment_verified ? 'verified' : 'pending'
     }
     
-    // Check if the specific document exists
     const hasDocument = (docKey === 'selfie_url' && (documents.selfie_url || user?.selfie_url)) ||
                        (docKey !== 'selfie_url' && documents[docKey])
     
@@ -226,7 +217,6 @@ const DocumentViewer = ({
       return 'missing'
     }
     
-    // Check individual document verification status
     if (user?.document_verification && user.document_verification[docKey]) {
       const status = user.document_verification[docKey]
       switch (status) {
@@ -237,12 +227,10 @@ const DocumentViewer = ({
       }
     }
     
-    // For selfie_url, if it doesn't exist in document_verification, return pending
     if (docKey === 'selfie_url' && user?.document_verification && !user.document_verification[docKey]) {
       return 'pending'
     }
     
-    // Fallback to global status if individual status not available
     if (user?.documents_verified) {
       return 'verified'
     } else if (user?.documents_verification_notes && user.documents_verification_notes.trim() !== '') {
@@ -273,7 +261,6 @@ const DocumentViewer = ({
   }
 
   const getOverallDocumentStatus = () => {
-    // Check if any required document is rejected
     const hasRejectedDocument = filteredDocuments.some(doc => {
       const status = getDocumentStatus(doc.key)
       return status === 'rejected'
@@ -283,7 +270,6 @@ const DocumentViewer = ({
       return 'rejected'
     }
 
-    // Check if all required documents are verified
     const allDocumentsVerified = filteredDocuments.every(doc => {
       const status = getDocumentStatus(doc.key)
       return status === 'verified'
@@ -293,29 +279,24 @@ const DocumentViewer = ({
       return 'verified'
     }
 
-    // If some documents are pending or missing, return pending
     return 'pending'
   }
 
   const getOverallUserStatus = () => {
     const documentStatus = getOverallDocumentStatus()
     
-    // If documents are rejected or pending, user status should be pending
     if (documentStatus === 'rejected' || documentStatus === 'pending') {
       return 'pending_verification'
     }
     
-    // If documents are verified but payment is not verified, user status should be pending payment
     if (documentStatus === 'verified' && !user.payment_verified) {
       return 'pending_payment'
     }
     
-    // If documents are verified and payment is verified, user can be active
     if (documentStatus === 'verified' && user.payment_verified) {
       return 'active'
     }
     
-    // Default to user's current status
     return user.status
   }
 
@@ -378,7 +359,6 @@ const DocumentViewer = ({
           onWheel={(e) => e.stopPropagation()}
           onTouchMove={(e) => e.stopPropagation()}
         >
-          {/* Header */}
           <div className="bg-white border-b border-gray-200 p-3 sm:p-4 md:p-6">
             <div className="flex items-center justify-between">
               <div className="flex-1 min-w-0">
@@ -395,7 +375,6 @@ const DocumentViewer = ({
               </button>
             </div>
             
-            {/* Mobile Document Selector */}
             <div className="md:hidden mt-3">
               <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide">
                 {filteredDocuments.map((doc, index) => {
@@ -424,7 +403,6 @@ const DocumentViewer = ({
             </div>
           </div>
 
-          {/* Alerts */}
           {error && (
             <div className="bg-red-50 border border-red-200 text-red-700 px-3 sm:px-4 py-3 mx-3 sm:mx-4 md:mx-6 mt-3 sm:mt-4 rounded-xl flex items-center gap-2">
               <AlertTriangle className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
@@ -440,7 +418,6 @@ const DocumentViewer = ({
           )}
 
           <div className="flex flex-col md:flex-row flex-1 overflow-hidden">
-            {/* Document List Sidebar */}
             <div className="hidden md:flex w-full md:w-80 bg-gray-50 border-b md:border-b-0 md:border-r border-gray-200 overflow-y-auto flex-col scrollbar-thin modal-scroll-container">
               <div className="p-3 sm:p-4 flex-1 overflow-y-auto scrollbar-thin modal-scroll-container">
                 <h3 className="font-semibold text-gray-900 mb-3 sm:mb-4 text-sm sm:text-base">Documents</h3>
@@ -472,7 +449,6 @@ const DocumentViewer = ({
                   })}
                 </div>
 
-                {/* Verification Summary */}
                 <div className="mt-3 sm:mt-4 md:mt-6 p-3 sm:p-4 bg-white rounded-lg sm:rounded-xl border border-gray-200">
                   <h4 className="font-semibold text-gray-900 mb-2 sm:mb-3 text-sm sm:text-base">Résumé</h4>
                   <div className="space-y-1 sm:space-y-2 text-xs sm:text-sm">
@@ -505,11 +481,9 @@ const DocumentViewer = ({
               </div>
             </div>
 
-            {/* Document Viewer */}
             <div className="flex-1 flex flex-col overflow-hidden">
               {currentDocument && currentDocUrl ? (
                 <>
-                  {/* Document Controls */}
                   <div className="bg-white border-b border-gray-200 p-3 sm:p-4 overflow-y-auto max-h-[40vh] md:max-h-none scrollbar-thin modal-scroll-container">
                     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
                       <div className="flex items-center gap-2 sm:gap-4">
@@ -570,7 +544,6 @@ const DocumentViewer = ({
                       </div>
                     </div>
                     
-                    {/* Individual Document/Payment Verification Buttons */}
                     <div className="mt-3 sm:mt-4 md:mt-6 p-3 sm:p-4 md:p-6 bg-gray-50 rounded-lg sm:rounded-xl border border-gray-200">
                       <h4 className="text-sm sm:text-base md:text-lg font-semibold text-gray-900 mb-3 sm:mb-4 text-center">
                         {currentDocument.key === 'payment_receipt' ? 'Vérification du paiement' : 'Vérification de ce document'}
@@ -622,7 +595,6 @@ const DocumentViewer = ({
                     </div>
                   </div>
 
-                  {/* Document Display */}
                   <div className="flex-1 bg-gray-100 flex items-center justify-center overflow-auto p-2 sm:p-4 scrollbar-thin modal-scroll-container">
                     <div className="relative max-w-full max-h-full">
                       {currentDocUrl ? (
@@ -652,7 +624,6 @@ const DocumentViewer = ({
                     </div>
                   </div>
 
-                  {/* Navigation */}
                   {filteredDocuments.length > 1 && (
                     <div className="bg-white border-t border-gray-200 p-3 sm:p-4">
                       <div className="flex items-center justify-between">
@@ -696,7 +667,6 @@ const DocumentViewer = ({
         </motion.div>
       </motion.div>
 
-      {/* Image Popup Modal */}
       {showImagePopup && (
         <motion.div
           initial={{ opacity: 0 }}
